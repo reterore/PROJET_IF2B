@@ -4,6 +4,16 @@
 
 #include "plateau.h"
 
+int asquisitionNbrJoueur(){
+    int nbrJoueur;
+    printf("Combien de joueur? \n");
+    scanf("%d", &nbrJoueur);
+    while (nbrJoueur < 0 || nbrJoueur > 2){
+        printf("Vous ne pouvez jouer qu'a 2 joueurs maximum, recommencez\n");
+        scanf("%d", &nbrJoueur);
+    }
+    return nbrJoueur;
+}
 
 int acquisitionDimGrille(){
     int dimGrille;
@@ -17,7 +27,7 @@ int acquisitionDimGrille(){
 }
 
 
-void initGrille(int dimGrille, char plateau[][dimGrille]){
+void initGrille(int dimGrille, char plateau[12][12]){
     for (int i = 0; i < dimGrille; ++i) {
         for (int j = 0; j < dimGrille; ++j) {
             plateau[i][j]='.';
@@ -28,9 +38,9 @@ void initGrille(int dimGrille, char plateau[][dimGrille]){
 void affichageGrille(int dimGrille, char plateau[][dimGrille]){
     for (int i = 0; i < dimGrille; ++i) {
         for (int j = 0; j < dimGrille; ++j) {
-            printf("%c", plateau[i][j]);
+            printf("|%c", plateau[i][j]);
         }
-        printf("\n");
+        printf("|\n");
     }
 }
 
@@ -48,12 +58,19 @@ int acquisitionTemps() {
 }
 
 
-int partie(int nbrJoueur, int dimGrille, int temps){
+int annoncePartie(int nbrJoueur, int dimGrille, int temps){
     if( nbrJoueur==1){
         printf("/// votre partie va se jouer seul sur une grille de %dX%d, vous avez %d secondes pour finir, bonne chance! ///\n", dimGrille, dimGrille, temps);
     }else{
-        printf("/// votre partie va se jouer en versus sur une grille de %dX%d, vous avez %d secondes pour finir, bonne chance! ///\n", dimGrille,dimGrille, temps);
+        printf("/// votre partie va se jouer en versus sur une grille de %dX%d, vous avez %d secondes chacun pour finir! ///\n", dimGrille,dimGrille, temps/2);
     }
     return 0;
 }
 
+//void placerMots(char plateau[12][12], int dimGrille){
+//    char mot[dimGrille];
+//    do {
+//        printf("voulez-vous placer le mot verticalement (v) ou horizontalement (h)?");
+//        fgets()
+//    }
+//}

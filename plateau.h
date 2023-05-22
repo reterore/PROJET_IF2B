@@ -15,10 +15,10 @@
 
 
 
-void initGrille(int dimGrille, char plateau[][dimGrille]);
+void initGrille(int dimGrille, char plateau[12][12]);
 void affichageGrille(int dimGrille, char plateau[][dimGrille]);
-
-
+int asquisitionNbrJoueur();
 int acquisitionDimGrille();
 int acquisitionTemps();
-int partie(int nbrJoueur, int dimGrille, int temps);
+int annoncePartie(int nbrJoueur, int dimGrille, int temps);
+void placerMots(char plateau[12][12],  int dimGrille);

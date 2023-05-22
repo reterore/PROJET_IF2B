@@ -18,5 +18,6 @@ typedef struct{
     int temps;
 }joueur;
 
-void distribuerMain(joueur* joueur, int dimGrille);
-void afficherMain(joueur* joueur);
+void initialiserJoueur(joueur* joueur1, int dimGrille, int temps, int nbrJoueur);
+void distribuerMain(joueur* joueur, int tailleMain);
+void afficherMain(joueur joueur, int tailleMain);
