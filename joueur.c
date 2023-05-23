@@ -5,7 +5,7 @@
 #include "joueur.h"
 
 
-void initialiserJoueur(joueur* joueur1, int dimGrille, int temps, int nbrJoueur) {
+void initialiserJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) {
     int tailleMain;
 
     if (nbrJoueur == 1) {
@@ -17,11 +17,12 @@ void initialiserJoueur(joueur* joueur1, int dimGrille, int temps, int nbrJoueur)
         return;
     }
 
-    joueur1->mainJoueur = malloc(tailleMain * sizeof(char));
-    joueur1->temps = temps;
+    joueur->mainJoueur = malloc(tailleMain * sizeof(char));
+    joueur->temps = temps;
+    joueur->tailleMain = tailleMain;
 
-    distribuerMain(joueur1, tailleMain);
-    afficherMain(*joueur1, tailleMain);
+    distribuerMain(joueur, joueur->tailleMain);
+    afficherMain(*joueur);
 }
 
 
@@ -59,13 +60,13 @@ void distribuerMain(joueur* joueur, int tailleMain) {
 
 }
 
-void afficherMain(joueur joueur, int tailleMain) {
+void afficherMain(joueur joueur) {
     int i = 0;
     printf("\n");
     printf("Vos lettres:\n");
     do {
         printf("|%c", joueur.mainJoueur[i]);
         i++;
-    } while(i<tailleMain);
+    } while(i<joueur.tailleMain);
     printf("|");
 }

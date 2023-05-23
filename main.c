@@ -39,6 +39,7 @@ int main() {
                     initialiserJoueur(&j2, dimGrille, temps/2, nbrJoueur);
                     printf("\nVotres temps :%d secondes\n", j2.temps);
                 }
+                placerMot(plateau, dimGrille, j1);
                 break;
             case 'q':
                 printf("/// --- Au revoir! --- ///");
