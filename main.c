@@ -27,9 +27,8 @@ int main() {
                 temps = acquisitionTemps();//demande et prends la valeur du temps de la partie
 
                 annoncePartie(nbrJoueur, dimGrille, temps);// affiche un texte pour l'instant
-                initGrille(dimGrille, plateau);// initialise la grille en fonction de la dimension donnée
+                initGrille(plateau);// initialise la grille en fonction de la dimension donnée
                 affichageGrille(dimGrille, plateau);//affiche la grille
-                printf("test\n");
                 if(nbrJoueur == 1){
                     initialiserJoueur(&j1, dimGrille, temps, nbrJoueur);
                     printf("\nVotres temps :%d secondes\n", j1.temps);
@@ -52,7 +51,6 @@ int main() {
             free(j1.mainJoueur);
             free(j2.mainJoueur);
         }
-
     }while(choixMenu != 'q');
     return 0;
 }

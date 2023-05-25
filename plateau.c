@@ -27,10 +27,10 @@ int acquisitionDimGrille(){
 }
 
 
-void initGrille(int dimGrille, char plateau[12][12]){
-    for (int i = 0; i < dimGrille; ++i) {
-        for (int j = 0; j < dimGrille; ++j) {
-            plateau[i][j]='.';
+void initGrille(char plateau[12][12]){
+    for (int i = 0; i < 12; ++i) {
+        for (int j = 0; j < 12; ++j) {
+            plateau[i][j]='_';
         }
     }
 }
@@ -38,7 +38,7 @@ void initGrille(int dimGrille, char plateau[12][12]){
 void affichageGrille(int dimGrille, char plateau[][dimGrille]){
     for (int i = 0; i < dimGrille; ++i) {
         for (int j = 0; j < dimGrille; ++j) {
-            printf("|%c", plateau[i][j]);
+            printf("| %c ", plateau[i][j]);
         }
         printf("|\n");
     }
@@ -73,9 +73,6 @@ void placerMot(char plateau[12][12], int dimGrille, joueur joueur){
     int x, y;
     int test1 = 0, test2 = 0, test3 = 0; // variables pour les tests des mots
     //demander le sens du mot
-    for (int i = 0; i < dimGrille; ++i) {
-        mot[i] = '*';
-    }
     do {
         printf("Voulez-vous placer le mot verticalement (v) ou horizontalement (h)?\n");
         scanf(" %c", &sens);
@@ -99,32 +96,46 @@ void placerMot(char plateau[12][12], int dimGrille, joueur joueur){
         printf("coordonnee en y comprise entre 0 et %d: y =", dimGrille-1);
         scanf("%d", &y);
     }
+    getchar();
     do {
-        acquisitionMot(mot, dimGrille);
+        for (int i = 0; i < dimGrille; ++i) {
+            mot[i] = ' ';
+        }
+        mot[dimGrille+1] = '\0';
+        acquisitionMot(mot, dimGrille, joueur, plateau, sens, x, y);
         affichageMot(mot);
-        test1 = verifLettres(mot, joueur, dimGrille);
-    } while (test1 == 0 || test2 == 0 || test3 == 0);
+    } while (verifLettresMot(mot, joueur) == false || verifEmplacement(sens, x, y, mot, dimGrille) == false || mot[0] == '\n');
 }
 
 
-void acquisitionMot(char* mot ,int dimGrille) {
-    for (int i = 0; i < dimGrille; ++i) {
-        mot[i] = ' ';
+void acquisitionMot(char* mot, int dimGrille, joueur joueur, char* plateau, char sens, int x, int y) {
+    int limite;
+    affichageGrille(dimGrille, plateau);
+    afficherMain(joueur);
+    if(sens == 'v'){
+        limite = y;
+    }else{
+        limite = x;
     }
-    printf("\n/// Veuillez entrer un mot :");
-    fgets(mot, dimGrille+1, stdin);
-    for (int i = 0; i < dimGrille; ++i) {
+    do {
+        for (int i = 0; i < dimGrille; ++i) {
+            mot[i] = ' ';
+        }
+        printf("\n/// Veuillez entrer un mot de %d lettres maximum :", dimGrille-limite);
+        fgets(mot, dimGrille - limite + 2, stdin);
+    } while(strlen(mot)>=dimGrille-limite+1 && mot[0] == '\n');
+    mot[strcspn(mot, "\n")] = '\0'; // supprime le '\n' de l'entrée
+    for (int i = 0; i < dimGrille; ++i) { // met le mot en majuscule
         mot[i] = toupper(mot[i]);
     }
 }
 
 void affichageMot(char* mot) { // affiche le mot
-    for (int i = 0; i < 12; ++i) {
-        printf("%c", mot[i]);
-    }
-    printf("\n");
-}
+    int j = 0;
+    do{
+        printf("%c|", mot[j]);
+        j++;
+    } while (mot[j]!= '\0');
 
-int verifLettres(char* mot, joueur joueur, int dimGrille){
-    printf("/// cette fonction est en cours de construction ///");
+    printf("\n");
 }
