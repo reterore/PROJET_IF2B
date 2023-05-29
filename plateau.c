@@ -27,7 +27,7 @@ int acquisitionDimGrille(){
 }
 
 
-void initGrille(char plateau[12][12]){
+void initGrille(char (*plateau)[12]){
     for (int i = 0; i < 12; ++i) {
         for (int j = 0; j < 12; ++j) {
             plateau[i][j]='_';
@@ -35,8 +35,23 @@ void initGrille(char plateau[12][12]){
     }
 }
 
-void affichageGrille(int dimGrille, char plateau[][dimGrille]){
+void affichageGrille(int dimGrille, char (*plateau)[12]){
+    printf("***** Le plateau *****\n");
+    printf("     ");
     for (int i = 0; i < dimGrille; ++i) {
+        if (i >= 11) {
+            printf("%d  ", i);
+        } else {
+            printf(" %d  ", i);
+        }
+    }
+    printf("\n");
+    for (int i = 0; i < dimGrille; ++i) {
+        if(i>=10){
+            printf(" %d ", i);
+        } else{
+            printf(" %d  ", i);
+        }
         for (int j = 0; j < dimGrille; ++j) {
             printf("| %c ", plateau[i][j]);
         }
@@ -66,49 +81,121 @@ int annoncePartie(int nbrJoueur, int dimGrille, int temps){
     }
     return 0;
 }
-
-void placerMot(char plateau[12][12], int dimGrille, joueur joueur){
-    char mot[dimGrille+1];
-    char sens;
-    int x, y;
-    int test1 = 0, test2 = 0, test3 = 0; // variables pour les tests des mots
-    //demander le sens du mot
+void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille) {
     do {
         printf("Voulez-vous placer le mot verticalement (v) ou horizontalement (h)?\n");
-        scanf(" %c", &sens);
-        getchar();
-    } while (sens != 'v' && sens != 'h');
-    //afficher le sens du mot choisis
-    if (sens == 'v') {
-        printf("Vous allez placer votre mot verticalement.\n");
+        scanf(" %c", sens);
+    } while (*sens != 'v' && *sens != 'h');
+
+    // Afficher le sens du mot choisi
+    if (*sens == 'v') {
+        printf("Vous allez placer votre mot verticalement, ");
+        printf("quelles sont les coordonnees de la 1ere lettre?\n!!!Attention, (0,0) correspond au coin en haut a gauche du plateau!!!\n");
+        printf("Coordonnee en x (lignes) : x =");
+        scanf("%d", x);
+        printf("Coordonnee en y (colonnes) : y =");
+        scanf("%d", y);
+
+        while ((*x < 0 || *x >= dimGrille) || (*y < 0 || *y > dimGrille - 1)) {
+            printf("/// Mauvaise saisie ! ///\n");
+            printf("Coordonnee en x comprise entre 0 et %d : x =", dimGrille);
+            scanf("%d", x);
+            printf("Coordonnee en y comprise entre 0 et %d : y =", dimGrille - 1);
+            scanf("%d", y);
+        }
     } else {
         printf("Vous allez placer votre mot horizontalement.\n");
-    }
-    printf("quelles sont les coordonnee de la premiere lettres?\n");
-    printf("coordonnee en x (ligne): x =");
-    scanf("%d", &x);
-    printf("coordonnee en y (ligne): y =");
-    scanf("%d", &y);
-    while((x<0  || x>dimGrille-1)||(y<0 || y>dimGrille-1)){
-        printf("/// Mauvaise saisie! ///\n");
-        printf("coordonnee en x comprise entre 0 et %d: x =", dimGrille-1);
-        scanf("%d", &x);
-        printf("coordonnee en y comprise entre 0 et %d: y =", dimGrille-1);
-        scanf("%d", &y);
-    }
-    getchar();
-    do {
-        for (int i = 0; i < dimGrille; ++i) {
-            mot[i] = ' ';
+        printf("quelles sont les coordonnees de la 1ere lettre?\n");
+        printf("Coordonnee en x (lignes) : x =");
+        scanf("%d", x);
+        printf("Coordonnee en y (colonnes) : y =");
+        scanf("%d", y);
+
+        while ((*x < 0 || *x > dimGrille - 1) || (*y < 0 || *y >= dimGrille)) {
+            printf("/// Mauvaise saisie ! ///\n");
+            printf("Coordonnee en x comprise entre 0 et %d : x =", dimGrille - 1);
+            scanf("%d", x);
+            printf("Coordonnee en y comprise entre 0 et %d : y =", dimGrille);
+            scanf("%d", y);
         }
-        mot[dimGrille+1] = '\0';
-        acquisitionMot(mot, dimGrille, joueur, plateau, sens, x, y);
-        affichageMot(mot);
-    } while (verifLettresMot(mot, joueur) == false || verifEmplacement(sens, x, y, mot, dimGrille) == false || mot[0] == '\n');
+    }
+}
+
+void placerMot(char (*plateau)[12], int x, int y, char sens, const char* mot) {
+    int lenMot = strlen(mot);
+
+    if (sens == 'h') {
+        // Placement horizontal
+        for (int i = 0; i < lenMot; i++) {
+            plateau[y][x + i] = mot[i];
+        }
+    } else if (sens == 'v') {
+        // Placement vertical
+        for (int i = 0; i < lenMot; i++) {
+            plateau[y + i][x] = mot[i];
+        }
+    }
+}
+
+void retirerMot(char plateau[][12], int x, int y, char sens, char* mot, int motFaux) {
+    // Vérifier si le mot doit être retiré
+    if (motFaux == 1) {
+        int tailleMot = strlen(mot);
+
+        // Parcourir le mot et retirer les lettres de la grille
+        for (int i = 0; i < tailleMot; i++) {
+            if (sens == 'h') {
+                plateau[y][x + i] = '_';
+            } else {
+                plateau[y + i][x] = '_';
+            }
+        }
+    }
 }
 
 
-void acquisitionMot(char* mot, int dimGrille, joueur joueur, char* plateau, char sens, int x, int y) {
+void  JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbrJoueur) {
+    char mot[dimGrille + 1];
+    char sens = 'h'; //initialisation au hasard pour éviter les bugs
+    joueur joueurActif;
+    int x = 0, y = 0, tours = 0, motFaux = 0;
+    do{
+        if (tours % nbrJoueur + 1 == 1) {
+            joueurActif = j1;
+        } else {
+            joueurActif = j2;
+        }printf("tours num %d, le joueur actif est le joueur num %d\n", tours + 1, tours % nbrJoueur + 1);
+        do {
+            do {
+                retirerMot(plateau, x, y, sens, mot, motFaux);
+                for (int i = 0; i < dimGrille; ++i) {
+                    mot[i] = '\0';
+                }
+                do {
+                    do {
+                        do {
+                            demanderCoordonnees(&sens, &x, &y, dimGrille);
+                        } while (!verifierPositionInitial(plateau, x, y));
+                        getchar();
+                        retirerIndicePlacement(plateau, dimGrille);
+                        plateau[y][x] = '#';
+                        acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y);
+                    } while (verifLettresMot(mot, joueurActif) == false);
+                } while (!verifierConflit(plateau, x, y, sens, mot));
+                verificationJoker(mot);
+                affichageMot(mot);
+                placerMot(plateau, x, y, sens, mot);
+                affichageGrille(dimGrille, plateau);
+            } while (!contactAvecMotsExistants(plateau, dimGrille, mot, sens, x, y, tours, &motFaux));
+        } while (!grilleBonne(plateau, "liste_francais.txt", dimGrille, &motFaux));
+        retirerLettresMain(&joueurActif, mot);
+        tours++;
+        motFaux = 0;
+    }while(!mainVide(joueurActif));
+}
+
+
+void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[12], char sens, int x, int y) {
     int limite;
     affichageGrille(dimGrille, plateau);
     afficherMain(joueur);
@@ -118,14 +205,14 @@ void acquisitionMot(char* mot, int dimGrille, joueur joueur, char* plateau, char
         limite = x;
     }
     do {
-        for (int i = 0; i < dimGrille; ++i) {
-            mot[i] = ' ';
+        for (int i = 0; i < dimGrille + 1; ++i) {
+            mot[i] = '\0';
         }
         printf("\n/// Veuillez entrer un mot de %d lettres maximum :", dimGrille-limite);
-        fgets(mot, dimGrille - limite + 2, stdin);
-    } while(strlen(mot)>=dimGrille-limite+1 && mot[0] == '\n');
+        gets(mot);
+    } while(strlen(mot)>=dimGrille-limite+1 || strlen(mot)<=1);
     mot[strcspn(mot, "\n")] = '\0'; // supprime le '\n' de l'entrée
-    for (int i = 0; i < dimGrille; ++i) { // met le mot en majuscule
+    for (int i = 0; i < strlen(mot); ++i) { // met le mot en majuscule
         mot[i] = toupper(mot[i]);
     }
 }
@@ -138,4 +225,15 @@ void affichageMot(char* mot) { // affiche le mot
     } while (mot[j]!= '\0');
 
     printf("\n");
+}
+
+void retirerIndicePlacement(char plateau[][12], int dimGrille){
+    for (int i = 0; i < dimGrille; ++i) {
+        for (int j = 0; j < dimGrille; ++j) {
+            if(plateau[i][j]=='#'){
+                plateau[i][j] = '_';
+                break;
+            }
+        }
+    }
 }

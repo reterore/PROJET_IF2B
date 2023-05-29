@@ -22,7 +22,6 @@ void initialiserJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) 
     joueur->tailleMain = tailleMain;
 
     distribuerMain(joueur, joueur->tailleMain);
-    afficherMain(*joueur);
 }
 
 
@@ -65,8 +64,28 @@ void afficherMain(joueur joueur) {
     printf("\n");
     printf("Vos lettres:\n");
     do {
-        printf("|%c", joueur.mainJoueur[i]);
+        if(joueur.mainJoueur[i] != '*') {
+            printf("|%c", joueur.mainJoueur[i]);
+        }
         i++;
     } while(i<joueur.tailleMain);
     printf("|");
+}
+
+void retirerLettresMain(joueur* j, char* lettres) {
+    int tailleLettres = strlen(lettres);
+    int tailleMain = strlen(j->mainJoueur);
+
+    // Parcourir les lettres spécifiées
+    for (int i = 0; i < tailleLettres; i++) {
+        char lettre = lettres[i];
+
+        // Rechercher et remplacer les lettres dans la main du joueur
+        for (int k = 0; k < tailleMain; k++) {
+            if (j->mainJoueur[k] == lettre) {
+                j->mainJoueur[k] = '*';
+                break;
+            }
+        }
+    }
 }
