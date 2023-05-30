@@ -69,16 +69,16 @@ void afficherMain(joueur joueur) {
         }
         i++;
     } while(i<joueur.tailleMain);
-    printf("|");
+    printf("|\n");
 }
 
-void retirerLettresMain(joueur* j, char* lettres) {
-    int tailleLettres = strlen(lettres);
+void retirerLettresMain(joueur* j, char* lettresUtilisees) {
+    int tailleLettres = strlen(lettresUtilisees);
     int tailleMain = strlen(j->mainJoueur);
 
     // Parcourir les lettres spécifiées
     for (int i = 0; i < tailleLettres; i++) {
-        char lettre = lettres[i];
+        char lettre = lettresUtilisees[i];
 
         // Rechercher et remplacer les lettres dans la main du joueur
         for (int k = 0; k < tailleMain; k++) {
