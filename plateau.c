@@ -186,7 +186,7 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
                         } while (!verifierPositionInitial(plateau, x, y));
                         getchar();
                         retirerIndicePlacement(plateau, dimGrille);
-                        plateau[y][x] = '#';
+                        plateau[x][y] = '#';
                         acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees);
                     } while (!verifLettresMot(mot, joueurActif));
                 } while (!verifierConflit(plateau, x, y, sens, mot));
@@ -194,13 +194,6 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
                 affichageMot(mot);
                 placerMot(plateau, x, y ,sens, mot);
             } while (!contactAvecMotsExistants(plateau, dimGrille, mot, sens, x, y, tours, &motFaux));
-
-            if (!grilleBonne(plateau, "../data/liste_francais.txt", dimGrille, &motFaux)) {
-                printf("Le mot n'est pas valide. Le joker a ete rendu au joueur.\n");
-            } else {
-                placerMot(plateau, x, y, sens, mot);
-                affichageGrille(dimGrille, plateau);
-            }
         } while (!grilleBonne(plateau, "../data/liste_francais.txt", dimGrille, &motFaux));
         retirerLettresMain(&joueurActif, lettresUtilisees);
         tours++;
