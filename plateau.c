@@ -96,11 +96,11 @@ void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille) {
         printf("Coordonnee en y (colonnes) : y =");
         scanf("%d", y);
 
-        while ((*x < 0 || *x >= dimGrille) || (*y < 0 || *y > dimGrille - 1)) {
+        while ((*x < 0 || *x >= dimGrille) || (*y < 0 || *y > dimGrille - 2)) {
             printf("/// Mauvaise saisie ! ///\n");
-            printf("Coordonnee en x comprise entre 0 et %d : x =", dimGrille);
+            printf("Coordonnee en x comprise entre 0 et %d : x =", dimGrille - 1);
             scanf("%d", x);
-            printf("Coordonnee en y comprise entre 0 et %d : y =", dimGrille - 1);
+            printf("Coordonnee en y comprise entre 0 et %d : y =", dimGrille - 2);
             scanf("%d", y);
         }
     } else {
@@ -111,11 +111,11 @@ void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille) {
         printf("Coordonnee en y (colonnes) : y =");
         scanf("%d", y);
 
-        while ((*x < 0 || *x > dimGrille - 1) || (*y < 0 || *y >= dimGrille)) {
+        while ((*x < 0 || *x > dimGrille - 2) || (*y < 0 || *y >= dimGrille)) {
             printf("/// Mauvaise saisie ! ///\n");
-            printf("Coordonnee en x comprise entre 0 et %d : x =", dimGrille - 1);
+            printf("Coordonnee en x comprise entre 0 et %d : x =", dimGrille - 2);
             scanf("%d", x);
-            printf("Coordonnee en y comprise entre 0 et %d : y =", dimGrille);
+            printf("Coordonnee en y comprise entre 0 et %d : y =", dimGrille-1);
             scanf("%d", y);
         }
     }
@@ -154,48 +154,63 @@ void retirerMot(char plateau[][12], int x, int y, char sens, char* mot, int motF
 }
 
 
-void  JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbrJoueur) {
+void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbrJoueur) {
     char mot[dimGrille + 1];
     char sens = 'h'; //initialisation au hasard pour éviter les bugs
+    char lettresUtilisees[41]; // 41 car c'est le nombre maxi de carte que pourrais posséder une main
     joueur joueurActif;
     int x = 0, y = 0, tours = 0, motFaux = 0;
-    do{
+    int jokerMis = 0;
+    do {
         if (tours % nbrJoueur + 1 == 1) {
             joueurActif = j1;
         } else {
             joueurActif = j2;
-        }printf("tours num %d, le joueur actif est le joueur num %d\n", tours + 1, tours % nbrJoueur + 1);
+        }
+        printf("Tours num%d, le joueur actif est le joueur num%d\n", tours + 1, tours % nbrJoueur + 1);
         do {
             do {
                 retirerMot(plateau, x, y, sens, mot, motFaux);
                 for (int i = 0; i < dimGrille; ++i) {
                     mot[i] = '\0';
                 }
+                for (int i = 0; i < 41; ++i) {
+                    lettresUtilisees[i] = '\0';
+                }
                 do {
                     do {
                         do {
+                            affichageGrille(dimGrille, plateau);
+                            afficherMain(joueurActif);
                             demanderCoordonnees(&sens, &x, &y, dimGrille);
                         } while (!verifierPositionInitial(plateau, x, y));
                         getchar();
                         retirerIndicePlacement(plateau, dimGrille);
                         plateau[y][x] = '#';
-                        acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y);
-                    } while (verifLettresMot(mot, joueurActif) == false);
+                        acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees);
+                    } while (!verifLettresMot(mot, joueurActif));
                 } while (!verifierConflit(plateau, x, y, sens, mot));
-                verificationJoker(mot);
+                verificationJoker(mot, &jokerMis);
                 affichageMot(mot);
+                placerMot(plateau, x, y ,sens, mot);
+            } while (!contactAvecMotsExistants(plateau, dimGrille, mot, sens, x, y, tours, &motFaux));
+
+            if (!grilleBonne(plateau, "../data/liste_francais.txt", dimGrille, &motFaux)) {
+                printf("Le mot n'est pas valide. Le joker a ete rendu au joueur.\n");
+            } else {
                 placerMot(plateau, x, y, sens, mot);
                 affichageGrille(dimGrille, plateau);
-            } while (!contactAvecMotsExistants(plateau, dimGrille, mot, sens, x, y, tours, &motFaux));
-        } while (!grilleBonne(plateau, "liste_francais.txt", dimGrille, &motFaux));
-        retirerLettresMain(&joueurActif, mot);
+            }
+        } while (!grilleBonne(plateau, "../data/liste_francais.txt", dimGrille, &motFaux));
+        retirerLettresMain(&joueurActif, lettresUtilisees);
         tours++;
         motFaux = 0;
-    }while(!mainVide(joueurActif));
+        jokerMis = 0;
+    } while (!mainVide(joueurActif));
 }
 
 
-void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[12], char sens, int x, int y) {
+void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[12], char sens, int x, int y, char* lettresUtilisees) {
     int limite;
     affichageGrille(dimGrille, plateau);
     afficherMain(joueur);
@@ -205,7 +220,7 @@ void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[12]
         limite = x;
     }
     do {
-        for (int i = 0; i < dimGrille + 1; ++i) {
+        for (int i = 0; i < dimGrille + 1; ++i) { // initilaiser le mot avec des \0
             mot[i] = '\0';
         }
         printf("\n/// Veuillez entrer un mot de %d lettres maximum :", dimGrille-limite);
@@ -214,6 +229,9 @@ void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[12]
     mot[strcspn(mot, "\n")] = '\0'; // supprime le '\n' de l'entrée
     for (int i = 0; i < strlen(mot); ++i) { // met le mot en majuscule
         mot[i] = toupper(mot[i]);
+    }
+    for (int i = 0; i < strlen(mot); ++i) {
+        lettresUtilisees[i] = mot[i];
     }
 }
 

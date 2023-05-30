@@ -12,7 +12,7 @@
 #include "joueur.h"
 
 bool verifLettresMot(char* mot, joueur joueur);
-bool verificationJoker(char* mot);
+bool verificationJoker(char* mot, int* jokerMis);
 bool verifierPositionInitial(char plateau[][12], int x, int y);
 bool verifierConflit(const char plateau[][12], int x, int y, char sens, const char* mot);
 bool rechercheMotFichier(char* fichier, char* mot);
