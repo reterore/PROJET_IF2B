@@ -198,7 +198,7 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
         tours++;
         motFaux = 0;
         jokerMis = 0;
-    } while (!mainVide(joueurActif, tours, nbrJoueur));
+    } while (!mainVide(joueurActif, tours-1, nbrJoueur));
 }
 
 

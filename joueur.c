@@ -11,7 +11,7 @@ void initialiserJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) 
     if (nbrJoueur == 1) {
         tailleMain = pow(dimGrille, 1);
     } else if (nbrJoueur == 2) {
-        tailleMain = (pow(dimGrille, 1.67)) / 2;
+        tailleMain = (pow(dimGrille, 1)) / 2;
     } else {
         printf("Erreur : nombre de joueurs invalide!\n");
         return;

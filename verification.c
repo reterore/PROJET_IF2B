@@ -213,6 +213,6 @@ bool mainVide(joueur joueur, int tours, int nbrJoueur) {
             return false;
         }
     }
-    printf("bravo, vous avez gagne au tours %d, joueur num%d\n", tours, tours%nbrJoueur + 1);
+    printf("bravo, vous avez gagne au tours %d, joueur num%d\n", tours + 1, tours%nbrJoueur + 1);
     return true;
 }
