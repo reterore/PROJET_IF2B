@@ -9,7 +9,7 @@ void initialiserJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) 
     int tailleMain;
 
     if (nbrJoueur == 1) {
-        tailleMain = pow(dimGrille, 1.5);
+        tailleMain = pow(dimGrille, 1);
     } else if (nbrJoueur == 2) {
         tailleMain = (pow(dimGrille, 1.67)) / 2;
     } else {

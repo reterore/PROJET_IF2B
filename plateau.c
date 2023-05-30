@@ -89,34 +89,33 @@ void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille) {
 
     // Afficher le sens du mot choisi
     if (*sens == 'v') {
-        printf("Vous allez placer votre mot verticalement, ");
-        printf("quelles sont les coordonnees de la 1ere lettre?\n!!!Attention, (0,0) correspond au coin en haut a gauche du plateau!!!\n");
-        printf("Coordonnee en x (lignes) : x =");
-        scanf("%d", x);
-        printf("Coordonnee en y (colonnes) : y =");
+        printf("Vous allez placer votre mot verticalement. Quelles sont les coordonnees de la 1ere lettre?\n");
+        printf("Attention, (0,0) correspond au coin en haut a gauche du plateau!\n");
+        printf("Coordonnee en y (lignes) : y = ");
         scanf("%d", y);
+        printf("Coordonnee en x (colonnes) : x = ");
+        scanf("%d", x);
 
-        while ((*x < 0 || *x >= dimGrille) || (*y < 0 || *y > dimGrille - 2)) {
+        while (*y < 0 || *y >= dimGrille || *x < 0 || *x > dimGrille - 2) {
             printf("/// Mauvaise saisie ! ///\n");
-            printf("Coordonnee en x comprise entre 0 et %d : x =", dimGrille - 1);
-            scanf("%d", x);
-            printf("Coordonnee en y comprise entre 0 et %d : y =", dimGrille - 2);
+            printf("Coordonnee en y comprise entre 0 et %d : y = ", dimGrille - 1);
             scanf("%d", y);
+            printf("Coordonnee en x comprise entre 0 et %d : x = ", dimGrille - 2);
+            scanf("%d", x);
         }
     } else {
-        printf("Vous allez placer votre mot horizontalement.\n");
-        printf("quelles sont les coordonnees de la 1ere lettre?\n");
-        printf("Coordonnee en x (lignes) : x =");
-        scanf("%d", x);
-        printf("Coordonnee en y (colonnes) : y =");
+        printf("Vous allez placer votre mot horizontalement. Quelles sont les coordonnees de la 1ere lettre?\n");
+        printf("Coordonnee en y (lignes) : y = ");
         scanf("%d", y);
+        printf("Coordonnee en x (colonnes) : x = ");
+        scanf("%d", x);
 
-        while ((*x < 0 || *x > dimGrille - 2) || (*y < 0 || *y >= dimGrille)) {
+        while (*y < 0 || *y > dimGrille || *x < 0 || *x >= dimGrille - 2) {
             printf("/// Mauvaise saisie ! ///\n");
-            printf("Coordonnee en x comprise entre 0 et %d : x =", dimGrille - 2);
-            scanf("%d", x);
-            printf("Coordonnee en y comprise entre 0 et %d : y =", dimGrille-1);
+            printf("Coordonnee en y comprise entre 0 et %d : y = ", dimGrille - 1);
             scanf("%d", y);
+            printf("Coordonnee en x comprise entre 0 et %d : x = ", dimGrille - 2);
+            scanf("%d", x);
         }
     }
 }
@@ -186,7 +185,7 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
                         } while (!verifierPositionInitial(plateau, x, y));
                         getchar();
                         retirerIndicePlacement(plateau, dimGrille);
-                        plateau[x][y] = '#';
+                        plateau[y][x] = '#';
                         acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees);
                     } while (!verifLettresMot(mot, joueurActif));
                 } while (!verifierConflit(plateau, x, y, sens, mot));
@@ -199,7 +198,7 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
         tours++;
         motFaux = 0;
         jokerMis = 0;
-    } while (!mainVide(joueurActif));
+    } while (!mainVide(joueurActif, tours, nbrJoueur));
 }
 
 

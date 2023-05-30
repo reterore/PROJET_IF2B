@@ -18,7 +18,7 @@ bool verifierConflit(const char plateau[][12], int x, int y, char sens, const ch
 bool rechercheMotFichier(char* fichier, char* mot);
 bool grilleBonne(char grille[][12], char* fichier, int dimGrille, int* motFaux);
 bool contactAvecMotsExistants(char plateau[][12], int dimGrille, char mot[], char sens, int x, int y, int tours, int* motFaux);
-bool mainVide(joueur joueur);
+bool mainVide(joueur joueur, int tours, int nbrJoueur);
 
 #endif //PROJET_IF2B_2_VERIFICATION_H
 

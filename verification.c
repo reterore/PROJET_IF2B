@@ -207,10 +207,12 @@ bool verifierPositionInitial(char plateau[][12], int x, int y) {
     return true;
 }
 
-bool mainVide(joueur joueur){
+bool mainVide(joueur joueur, int tours, int nbrJoueur) {
     for (int i = 0; i < joueur.tailleMain; ++i) {
-        if (joueur.mainJoueur[i] != '*');
-        return false;
+        if (joueur.mainJoueur[i] != '*' && joueur.mainJoueur[i] != '\0') {
+            return false;
+        }
     }
+    printf("bravo, vous avez gagne au tours %d, joueur num%d\n", tours, tours%nbrJoueur + 1);
     return true;
 }
