@@ -89,3 +89,7 @@ void retirerLettresMain(joueur* j, char* lettresUtilisees) {
         }
     }
 }
+
+void sauvegarderPartie(joueur* joueur1, joueur* joueur2, int nbrJoueur, int dimGrille, char plateau[][12]){
+
+}

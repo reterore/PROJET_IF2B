@@ -24,4 +24,5 @@ void initialiserJoueur(joueur* joueur1, int dimGrille, int temps, int nbrJoueur)
 void distribuerMain(joueur* joueur, int tailleMain);
 void afficherMain(joueur joueur);
 void retirerLettresMain(joueur* j, char* lettresUtilisees);
+void sauvegarderPartie(joueur* joueur1, joueur* joueur2, int nbrJoueur, int dimGrille, char plateau[][12]);
 #endif //PROJET_IF2B_JOUEUR_H

@@ -186,7 +186,17 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
                         getchar();
                         retirerIndicePlacement(plateau, dimGrille);
                         plateau[y][x] = '#';
-                        acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees);
+                        acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees, tours);
+                        if (strcmp(mot, "/s") == 0) { // Vérifier si le joueur veut sauvegarder la partie
+                            sauvegarderPartie(&j1, &j2, nbrJoueur, dimGrille, plateau); // Appeler une fonction pour sauvegarder la partie
+                            return; // Sortir de la fonction après avoir sauvegardé la partie
+                        }else if (strcmp(mot, "/p") == 0) {
+                            //passerTour();
+                            return;
+                        }else if (strcmp(mot, "/q") == 0){
+                            //quitterPartie();
+                            return;
+                        }
                     } while (!verifLettresMot(mot, joueurActif));
                 } while (!verifierConflit(plateau, x, y, sens, mot));
                 verificationJoker(mot, &jokerMis);
@@ -202,26 +212,26 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
 }
 
 
-void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[12], char sens, int x, int y, char* lettresUtilisees) {
-    int limite;
+void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[12], char sens, int x, int y, char* lettresUtilisees, int tours) {
+    int limite, n = (tours > 0) ? 1 : 0;
     affichageGrille(dimGrille, plateau);
     afficherMain(joueur);
     if(sens == 'v'){
         limite = y;
-    }else{
+    } else {
         limite = x;
     }
     do {
-        for (int i = 0; i < dimGrille + 1; ++i) { // initilaiser le mot avec des \0
+        for (int i = 0; i < dimGrille + 1; ++i) { // initialiser le mot avec des \0
             mot[i] = '\0';
         }
-        printf("\n/// Veuillez entrer un mot de %d lettres maximum :", dimGrille-limite);
-        gets(mot);
-    } while(strlen(mot)>=dimGrille-limite+1 || strlen(mot)<=1);
-    mot[strcspn(mot, "\n")] = '\0'; // supprime le '\n' de l'entrée
-    for (int i = 0; i < strlen(mot); ++i) { // met le mot en majuscule
-        mot[i] = toupper(mot[i]);
-    }
+        printf("\n/// Veuillez entrer un mot de %d lettres maximum :", dimGrille - limite);
+        fgets(mot, dimGrille - limite + 1, stdin);
+        mot[strcspn(mot, "\n")] = '\0'; // supprimer le '\n' de l'entrée
+        for (int i = 0; i < strlen(mot); ++i) { // mettre le mot en majuscule
+            mot[i] = toupper(mot[i]);
+        }
+    } while(strlen(mot) < 2 - n || strlen(mot) > dimGrille - limite);
     for (int i = 0; i < strlen(mot); ++i) {
         lettresUtilisees[i] = mot[i];
     }
