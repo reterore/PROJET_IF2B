@@ -27,18 +27,22 @@ int acquisitionDimGrille(){
 }
 
 
-void initGrille(char (*plateau)[12]){
-    for (int i = 0; i < 12; ++i) {
-        for (int j = 0; j < 12; ++j) {
+void initGrille(char (*plateau)[14]){
+    for (int i = 0; i < 14; ++i) {
+        for (int j = 0; j < 14; ++j) {
             plateau[i][j]='_';
         }
     }
 }
 
-void affichageGrille(int dimGrille, char (*plateau)[12]){
-    printf("***** Le plateau *****\n");
+void affichageGrille(int dimGrille, char (*plateau)[14]){
+    printf("  ");
+    for (int i = 0; i < dimGrille/8; ++i) {
+        printf("      ");
+    }
+    printf("**--Plateau de jeu--**\n");
     printf("     ");
-    for (int i = 0; i < dimGrille; ++i) {
+    for (int i = 1; i < dimGrille + 1; ++i) {
         if (i >= 11) {
             printf("%d  ", i);
         } else {
@@ -46,16 +50,17 @@ void affichageGrille(int dimGrille, char (*plateau)[12]){
         }
     }
     printf("\n");
-    for (int i = 0; i < dimGrille; ++i) {
+    for (int i = 1; i < dimGrille + 1; ++i) {
         if(i>=10){
             printf(" %d ", i);
         } else{
             printf(" %d  ", i);
         }
-        for (int j = 0; j < dimGrille; ++j) {
+        for (int j = 1; j < dimGrille + 1; ++j) {
             printf("| %c ", plateau[i][j]);
         }
         printf("|\n");
+
     }
 }
 
@@ -81,7 +86,12 @@ int annoncePartie(int nbrJoueur, int dimGrille, int temps){
     }
     return 0;
 }
-void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille) {
+void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille, int tours) {
+    int decalage = 0;
+    if (tours < 1) {
+        decalage = 1;
+    }
+
     do {
         printf("Voulez-vous placer le mot verticalement (v) ou horizontalement (h)?\n");
         scanf(" %c", sens);
@@ -90,17 +100,17 @@ void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille) {
     // Afficher le sens du mot choisi
     if (*sens == 'v') {
         printf("Vous allez placer votre mot verticalement. Quelles sont les coordonnees de la 1ere lettre?\n");
-        printf("Attention, (0,0) correspond au coin en haut a gauche du plateau!\n");
+        printf("Attention, (1,1) correspond au coin en haut a gauche du plateau!\n");
         printf("Coordonnee en y (lignes) : y = ");
         scanf("%d", y);
         printf("Coordonnee en x (colonnes) : x = ");
         scanf("%d", x);
 
-        while (*y < 0 || *y >= dimGrille || *x < 0 || *x > dimGrille - 2) {
+        while (*y < 1 || *y > dimGrille - decalage || *x < 1 || *x > dimGrille) {
             printf("/// Mauvaise saisie ! ///\n");
-            printf("Coordonnee en y comprise entre 0 et %d : y = ", dimGrille - 1);
+            printf("Coordonnee en y comprise entre 1 et %d : y = ", dimGrille - decalage);
             scanf("%d", y);
-            printf("Coordonnee en x comprise entre 0 et %d : x = ", dimGrille - 2);
+            printf("Coordonnee en x comprise entre 1 et %d : x = ", dimGrille);
             scanf("%d", x);
         }
     } else {
@@ -110,17 +120,17 @@ void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille) {
         printf("Coordonnee en x (colonnes) : x = ");
         scanf("%d", x);
 
-        while (*y < 0 || *y > dimGrille || *x < 0 || *x >= dimGrille - 2) {
+        while (*y < 1 || *y > dimGrille || *x < 1 || *x > dimGrille - decalage) {
             printf("/// Mauvaise saisie ! ///\n");
-            printf("Coordonnee en y comprise entre 0 et %d : y = ", dimGrille - 1);
+            printf("Coordonnee en y comprise entre 1 et %d : y = ", dimGrille);
             scanf("%d", y);
-            printf("Coordonnee en x comprise entre 0 et %d : x = ", dimGrille - 2);
+            printf("Coordonnee en x comprise entre 1 et %d : x = ", dimGrille - decalage);
             scanf("%d", x);
         }
     }
 }
 
-void placerMot(char (*plateau)[12], int x, int y, char sens, const char* mot) {
+void placerMot(char (*plateau)[14], int x, int y, char sens, const char* mot) {
     int lenMot = strlen(mot);
 
     if (sens == 'h') {
@@ -136,7 +146,7 @@ void placerMot(char (*plateau)[12], int x, int y, char sens, const char* mot) {
     }
 }
 
-void retirerMot(char plateau[][12], int x, int y, char sens, char* mot, int motFaux) {
+void retirerMot(char plateau[][14], int x, int y, char sens, char* mot, int motFaux) {
     // Vérifier si le mot doit être retiré
     if (motFaux == 1) {
         int tailleMot = strlen(mot);
@@ -153,12 +163,12 @@ void retirerMot(char plateau[][12], int x, int y, char sens, char* mot, int motF
 }
 
 
-void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbrJoueur) {
+void JouerTours(char plateau[][14], int dimGrille, joueur j1, joueur j2, int nbrJoueur, int tours) {
     char mot[dimGrille + 1];
     char sens = 'h'; //initialisation au hasard pour éviter les bugs
     char lettresUtilisees[41]; // 41 car c'est le nombre maxi de carte que pourrais posséder une main
     joueur joueurActif;
-    int x = 0, y = 0, tours = 0, motFaux = 0;
+    int x = 0, y = 0, motFaux = 0;
     int jokerMis = 0;
     do {
         if (tours % nbrJoueur + 1 == 1) {
@@ -179,21 +189,21 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
                 do {
                     do {
                         do {
+                            retirerIndicePlacement(plateau, dimGrille);
                             affichageGrille(dimGrille, plateau);
                             afficherMain(joueurActif);
-                            demanderCoordonnees(&sens, &x, &y, dimGrille);
+                            demanderCoordonnees(&sens, &x, &y, dimGrille, tours);
                         } while (!verifierPositionInitial(plateau, x, y));
                         getchar();
-                        retirerIndicePlacement(plateau, dimGrille);
                         plateau[y][x] = '#';
                         acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees, tours);
-                        if (strcmp(mot, "/s") == 0) { // Vérifier si le joueur veut sauvegarder la partie
-                            sauvegarderPartie(&j1, &j2, nbrJoueur, dimGrille, plateau); // Appeler une fonction pour sauvegarder la partie
+                        if (strcmp(mot, "/S") == 0) { // Vérifier si le joueur veut sauvegarder la partie
+                            sauvegarderPartie(&j1, &j2, nbrJoueur, dimGrille, plateau, tours); // Appeler une fonction pour sauvegarder la partie
                             return; // Sortir de la fonction après avoir sauvegardé la partie
-                        }else if (strcmp(mot, "/p") == 0) {
+                        }else if (strcmp(mot, "/P\n") == 0) {
                             //passerTour();
                             return;
-                        }else if (strcmp(mot, "/q") == 0){
+                        }else if (strcmp(mot, "/Q\n") == 0){
                             //quitterPartie();
                             return;
                         }
@@ -212,26 +222,28 @@ void JouerTours(char plateau[][12], int dimGrille, joueur j1, joueur j2, int nbr
 }
 
 
-void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[12], char sens, int x, int y, char* lettresUtilisees, int tours) {
-    int limite, n = (tours > 0) ? 1 : 0;
+void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[14], char sens, int x, int y, char* lettresUtilisees, int tours) {
+    int limite, n = (tours > 0) ? 0 : 1;
     affichageGrille(dimGrille, plateau);
     afficherMain(joueur);
     if(sens == 'v'){
-        limite = y;
+        limite = y-1;
     } else {
-        limite = x;
+        limite = x-1;
     }
     do {
-        for (int i = 0; i < dimGrille + 1; ++i) { // initialiser le mot avec des \0
+        for (int i = 0; i < dimGrille + 1; ++i) {
+            // initialiser le mot avec des \0
             mot[i] = '\0';
         }
         printf("\n/// Veuillez entrer un mot de %d lettres maximum :", dimGrille - limite);
-        fgets(mot, dimGrille - limite + 1, stdin);
+        gets(mot);
         mot[strcspn(mot, "\n")] = '\0'; // supprimer le '\n' de l'entrée
-        for (int i = 0; i < strlen(mot); ++i) { // mettre le mot en majuscule
+        for (int i = 0; i < strlen(mot); ++i) {
+            // mettre le mot en majuscule
             mot[i] = toupper(mot[i]);
         }
-    } while(strlen(mot) < 2 - n || strlen(mot) > dimGrille - limite);
+    } while(strlen(mot) < 1 + n || strlen(mot) > dimGrille - limite);
     for (int i = 0; i < strlen(mot); ++i) {
         lettresUtilisees[i] = mot[i];
     }
@@ -247,9 +259,9 @@ void affichageMot(char* mot) { // affiche le mot
     printf("\n");
 }
 
-void retirerIndicePlacement(char plateau[][12], int dimGrille){
-    for (int i = 0; i < dimGrille; ++i) {
-        for (int j = 0; j < dimGrille; ++j) {
+void retirerIndicePlacement(char plateau[][14], int dimGrille){
+    for (int i = 1; i < dimGrille + 1; ++i) {
+        for (int j = 1; j < dimGrille + 1; ++j) {
             if(plateau[i][j]=='#'){
                 plateau[i][j] = '_';
                 break;

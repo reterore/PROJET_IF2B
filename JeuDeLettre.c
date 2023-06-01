@@ -7,9 +7,9 @@
 
 void jeuDeLettres(){
     joueur j1, j2;
-    int nbrJoueur, dimGrille, temps;
+    int nbrJoueur, dimGrille, temps, tours = 0;
     char choixMenu;
-    char plateau[12][12];
+    char plateau[14][14];
     srand(time(NULL));
     printf("\n/// Bienvenue dans le jeu de lettre! ///\n");
     do{
@@ -21,6 +21,9 @@ void jeuDeLettres(){
         switch (choixMenu) {
             case 'r':
                 printf("vous avez decidez de reprendre votre partie.\n");
+                chargerPartie(&j1, &j2, &nbrJoueur, &dimGrille, plateau, &tours);
+                printf("%d %d %d %s %s ", dimGrille, tours, nbrJoueur, j1.mainJoueur, j2.mainJoueur);
+                JouerTours(plateau, dimGrille, j1, j2, nbrJoueur, tours);
                 break;
             case 'n':
                 nbrJoueur = asquisitionNbrJoueur();
@@ -34,7 +37,7 @@ void jeuDeLettres(){
                     initialiserJoueur(&j1, dimGrille, temps/2, nbrJoueur);
                     initialiserJoueur(&j2, dimGrille, temps/2, nbrJoueur);
                 }
-                partie(j1 , j2, plateau, dimGrille, nbrJoueur);
+                JouerTours(plateau, dimGrille, j1, j2, nbrJoueur, tours);
                 break;
             case 'q':
                 printf("/// --- Au revoir! --- ///");
@@ -53,6 +56,5 @@ void jeuDeLettres(){
     }while(choixMenu != 'q');
 }
 
-void partie(joueur j1, joueur j2, char plateau[][12], int dimGrille, int nbrJoueur){
-    JouerTours(plateau, dimGrille, j1, j2, nbrJoueur);
-}
+
+
