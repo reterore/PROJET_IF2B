@@ -25,7 +25,7 @@ void affichageGrille(int dimGrille, char plateau[][dimGrille]);
 int asquisitionNbrJoueur();
 int acquisitionDimGrille();
 int acquisitionTemps();
-void placerMot(char plateau[][14], int x, int y, char sens, const char* mot);
+void placerMot(char plateau[][14], int x, int y, char sens, const char* mot, int passerTour);
 void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille, int tours);
 int annoncePartie(int nbrJoueur, int dimGrille, int temps);
 void JouerTours(char (*plateau)[14],  int dimGrille, joueur j1, joueur j2, int nbrJoueur, int tours);

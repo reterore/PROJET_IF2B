@@ -130,18 +130,19 @@ void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille, int tours) {
     }
 }
 
-void placerMot(char (*plateau)[14], int x, int y, char sens, const char* mot) {
+void placerMot(char (*plateau)[14], int x, int y, char sens, const char* mot, int passerTour) {
     int lenMot = strlen(mot);
-
-    if (sens == 'h') {
-        // Placement horizontal
-        for (int i = 0; i < lenMot; i++) {
-            plateau[y][x + i] = mot[i];
-        }
-    } else if (sens == 'v') {
-        // Placement vertical
-        for (int i = 0; i < lenMot; i++) {
-            plateau[y + i][x] = mot[i];
+    if(passerTour != 1) {
+        if (sens == 'h') {
+            // Placement horizontal
+            for (int i = 0; i < lenMot; i++) {
+                plateau[y][x + i] = mot[i];
+            }
+        } else if (sens == 'v') {
+            // Placement vertical
+            for (int i = 0; i < lenMot; i++) {
+                plateau[y + i][x] = mot[i];
+            }
         }
     }
 }
@@ -168,7 +169,7 @@ void JouerTours(char plateau[][14], int dimGrille, joueur j1, joueur j2, int nbr
     char sens = 'h'; //initialisation au hasard pour éviter les bugs
     char lettresUtilisees[41]; // 41 car c'est le nombre maxi de carte que pourrais posséder une main
     joueur joueurActif;
-    int x = 0, y = 0, motFaux = 0;
+    int x = 0, y = 0, motFaux = 0, passerTour = 0;
     int jokerMis = 0;
     do {
         if (tours % nbrJoueur + 1 == 1) {
@@ -198,26 +199,27 @@ void JouerTours(char plateau[][14], int dimGrille, joueur j1, joueur j2, int nbr
                         plateau[y][x] = '#';
                         acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees, tours);
                         if (strcmp(mot, "/S") == 0) { // Vérifier si le joueur veut sauvegarder la partie
+                            retirerIndicePlacement(plateau, dimGrille);
                             sauvegarderPartie(&j1, &j2, nbrJoueur, dimGrille, plateau, tours); // Appeler une fonction pour sauvegarder la partie
                             return; // Sortir de la fonction après avoir sauvegardé la partie
-                        }else if (strcmp(mot, "/P\n") == 0) {
-                            //passerTour();
-                            return;
-                        }else if (strcmp(mot, "/Q\n") == 0){
-                            //quitterPartie();
+                        }else if (strcmp(mot, "/P") == 0) {
+                            passerTour = 1;
+                        }else if (strcmp(mot, "/Q") == 0){
+                            printf("Vous avez terminez la partie.\n");
                             return;
                         }
-                    } while (!verifLettresMot(mot, joueurActif));
-                } while (!verifierConflit(plateau, x, y, sens, mot));
+                    } while ( passerTour == 0 && !verifLettresMot(mot, joueurActif));
+                } while (passerTour == 0 && !verifierConflit(plateau, x, y, sens, mot));
                 verificationJoker(mot, &jokerMis);
                 affichageMot(mot);
-                placerMot(plateau, x, y ,sens, mot);
-            } while (!contactAvecMotsExistants(plateau, dimGrille, mot, sens, x, y, tours, &motFaux));
-        } while (!grilleBonne(plateau, "../data/liste_francais.txt", dimGrille, &motFaux));
-        retirerLettresMain(&joueurActif, lettresUtilisees);
+                placerMot(plateau, x, y ,sens, mot, passerTour);
+            } while (passerTour == 0 &&!contactAvecMotsExistants(plateau, dimGrille, mot, sens, x, y, tours, &motFaux) && passerTour == 0);
+        } while (passerTour == 0 && !grilleBonne(plateau, "../data/liste_francais.txt", dimGrille, &motFaux) );
+        retirerLettresMain(&joueurActif, lettresUtilisees, passerTour);
         tours++;
         motFaux = 0;
         jokerMis = 0;
+        passerTour = 0;
     } while (!mainVide(joueurActif, tours-1, nbrJoueur));
 }
 

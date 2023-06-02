@@ -72,19 +72,20 @@ void afficherMain(joueur joueur) {
     printf("|\n");
 }
 
-void retirerLettresMain(joueur* j, char* lettresUtilisees) {
+void retirerLettresMain(joueur* j, char* lettresUtilisees, int passerTours) {
     int tailleLettres = strlen(lettresUtilisees);
     int tailleMain = strlen(j->mainJoueur);
+    if(passerTours != 1) {
+        // Parcourir les lettres spécifiées
+        for (int i = 0; i < tailleLettres; i++) {
+            char lettre = lettresUtilisees[i];
 
-    // Parcourir les lettres spécifiées
-    for (int i = 0; i < tailleLettres; i++) {
-        char lettre = lettresUtilisees[i];
-
-        // Rechercher et remplacer les lettres dans la main du joueur
-        for (int k = 0; k < tailleMain; k++) {
-            if (j->mainJoueur[k] == lettre) {
-                j->mainJoueur[k] = '*';
-                break;
+            // Rechercher et remplacer les lettres dans la main du joueur
+            for (int k = 0; k < tailleMain; k++) {
+                if (j->mainJoueur[k] == lettre) {
+                    j->mainJoueur[k] = '*';
+                    break;
+                }
             }
         }
     }
@@ -146,16 +147,17 @@ void chargerPartie(joueur* joueur1, joueur* joueur2, int* nbrJoueur, int* dimGri
 
     fscanf(fichier, "%s\n", joueur1->mainJoueur);
     printf("Main du joueur : %s\n", joueur1->mainJoueur);
-    fscanf(fichier, "%d\n", &joueur1->temps);
     printf("test");
-    fscanf(fichier, "%d\n", &joueur1->tailleMain);
+    fscanf(fichier, "%d\n", &(joueur1->temps));
+    printf("test");
+    fscanf(fichier, "%d\n", &(joueur1->tailleMain));
     printf("test");
 
     fscanf(fichier, "%s\n", joueur2->mainJoueur);
     printf("test");
-    fscanf(fichier, "%d\n", &joueur2->temps);
+    fscanf(fichier, "%d\n", (joueur2->temps));
     printf("test");
-    fscanf(fichier, "%d\n", &joueur2->tailleMain);
+    fscanf(fichier, "%d\n", &(joueur2->tailleMain));
     printf("test");
     // Lire le plateau de jeu
     for (int i = 0; i < 14; i++) {
@@ -167,5 +169,5 @@ void chargerPartie(joueur* joueur1, joueur* joueur2, int* nbrJoueur, int* dimGri
     // Fermer le fichier
     fclose(fichier);
 
-    printf("La partie a ete chargee avec succes à partir du fichier sauvegarde.txt.\n");
+    printf("La partie a été chargée avec succès à partir du fichier sauvegarde.txt.\n");
 }

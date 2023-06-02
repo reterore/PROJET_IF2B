@@ -23,7 +23,7 @@ typedef struct{
 void initialiserJoueur(joueur* joueur1, int dimGrille, int temps, int nbrJoueur);
 void distribuerMain(joueur* joueur, int tailleMain);
 void afficherMain(joueur joueur);
-void retirerLettresMain(joueur* j, char* lettresUtilisees);
+void retirerLettresMain(joueur* j, char* lettresUtilisees, int passerTour);
 void sauvegarderPartie(joueur* joueur1, joueur* joueur2, int nbrJoueur, int dimGrille, char plateau[][14], int tours);
 void chargerPartie(joueur* joueur1, joueur* joueur2, int* nbrJoueur, int* dimGrille, char plateau[][14], int *tours);
 #endif //PROJET_IF2B_JOUEUR_H
