@@ -95,79 +95,66 @@ void retirerLettresMain(joueur* j, char* lettresUtilisees, int passerTours) {
 void sauvegarderPartie(joueur* joueur1, joueur* joueur2, int nbrJoueur, int dimGrille, char plateau[][14], int tours) {
     // Ouvrir le fichier en mode d'écriture
     FILE* fichier = fopen("../data/sauvegarde.txt", "w");
-
     if (fichier == NULL) {
         printf("Erreur lors de l'ouverture du fichier de sauvegarde.\n");
         return;
     }
-
     // Écrire les informations dans le fichier
     fprintf(fichier, "%d\n", nbrJoueur);
     fprintf(fichier, "%d\n", dimGrille);
     fprintf(fichier, "%d\n", tours);
-
     fprintf(fichier, "%s\n", joueur1->mainJoueur);
     fprintf(fichier, "%d\n", joueur1->temps);
     fprintf(fichier, "%d\n", joueur1->tailleMain);
-
     fprintf(fichier, "%s\n", joueur2->mainJoueur);
     fprintf(fichier, "%d\n", joueur2->temps);
     fprintf(fichier, "%d\n", joueur2->tailleMain);
-
     // Écrire le plateau de jeu
     for (int i = 0; i < 14; i++) {
         for (int j = 0; j < 14; j++) {
-            fprintf(fichier, "%c ", plateau[i][j]);
+            fprintf(fichier, "%c\n", plateau[i][j]);
         }
-        fprintf(fichier, "\n");
     }
-
     // Fermer le fichier
     fclose(fichier);
-
     printf("La partie a ete sauvegardee avec succes dans le fichier sauvegarde.txt.\n");
 }
 
 void chargerPartie(joueur* joueur1, joueur* joueur2, int* nbrJoueur, int* dimGrille, char plateau[][14], int* tours) {
     // Ouvrir le fichier en mode de lecture
     FILE* fichier = fopen("../data/sauvegarde.txt", "r");
-
     if (fichier == NULL) {
         printf("Erreur lors de l'ouverture du fichier de sauvegarde.\n");
         return;
     }
-
     // Lire les informations du fichier
-
     fscanf(fichier, "%d\n", nbrJoueur);
     printf("%d\n", *nbrJoueur);
     fscanf(fichier, "%d\n", dimGrille);
-
     fscanf(fichier, "%d\n", tours);
 
     fscanf(fichier, "%s\n", joueur1->mainJoueur);
     printf("Main du joueur : %s\n", joueur1->mainJoueur);
     printf("test");
-    fscanf(fichier, "%d\n", &(joueur1->temps));
+    fscanf(fichier, "%d\n", &joueur1->temps);
     printf("test");
-    fscanf(fichier, "%d\n", &(joueur1->tailleMain));
-    printf("test");
-
+    fscanf(fichier, "%d\n", &joueur1->tailleMain);
+    printf("test\n");
+    printf("le bug se situe juste ici\n");
     fscanf(fichier, "%s\n", joueur2->mainJoueur);
     printf("test");
-    fscanf(fichier, "%d\n", (joueur2->temps));
+    fscanf(fichier, "%d\n", &joueur2->temps);
     printf("test");
-    fscanf(fichier, "%d\n", &(joueur2->tailleMain));
-    printf("test");
+    fscanf(fichier, "%d\n", &joueur2->tailleMain);
+    printf("test\n");
+
     // Lire le plateau de jeu
     for (int i = 0; i < 14; i++) {
         for (int j = 0; j < 14; j++) {
             fscanf(fichier, " %c", &plateau[i][j]);
         }
     }
-
     // Fermer le fichier
     fclose(fichier);
-
     printf("La partie a été chargée avec succès à partir du fichier sauvegarde.txt.\n");
 }

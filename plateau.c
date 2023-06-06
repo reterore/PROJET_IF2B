@@ -238,7 +238,8 @@ void acquisitionMot(char* mot, int dimGrille, joueur joueur, char (*plateau)[14]
             // initialiser le mot avec des \0
             mot[i] = '\0';
         }
-        printf("\n/// Veuillez entrer un mot de %d lettres maximum :", dimGrille - limite);
+        printf("\nVous pouvez passer votre tours avec */p*, quittez avec */q* ou sauvegardez avec */s*");
+        printf("\n/// Veuillez entrer un mot de %d lettres maximum /// :", dimGrille - limite);
         gets(mot);
         mot[strcspn(mot, "\n")] = '\0'; // supprimer le '\n' de l'entrée
         for (int i = 0; i < strlen(mot); ++i) {
