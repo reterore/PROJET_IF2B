@@ -131,15 +131,15 @@ void chargerPartie(joueur* joueur1, joueur* joueur2, int* nbrJoueur, int* dimGri
     fscanf(fichier, "%d\n", nbrJoueur);
     printf("%d\n", *nbrJoueur);
     fscanf(fichier, "%d\n", dimGrille);
+    printf("%d\n", *dimGrille);
     fscanf(fichier, "%d\n", tours);
-
+    printf("%d\n", *tours);
     fscanf(fichier, "%s\n", joueur1->mainJoueur);
     printf("Main du joueur : %s\n", joueur1->mainJoueur);
-    printf("test");
     fscanf(fichier, "%d\n", &joueur1->temps);
-    printf("test");
+    printf("%d\n", joueur1->temps);
     fscanf(fichier, "%d\n", &joueur1->tailleMain);
-    printf("test\n");
+    printf("%d\n", joueur1->tailleMain);
     printf("le bug se situe juste ici\n");
     fscanf(fichier, "%s\n", joueur2->mainJoueur);
     printf("test");
@@ -147,6 +147,8 @@ void chargerPartie(joueur* joueur1, joueur* joueur2, int* nbrJoueur, int* dimGri
     printf("test");
     fscanf(fichier, "%d\n", &joueur2->tailleMain);
     printf("test\n");
+
+
 
     // Lire le plateau de jeu
     for (int i = 0; i < 14; i++) {

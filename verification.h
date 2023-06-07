@@ -19,6 +19,7 @@ bool rechercheMotFichier(char* fichier, char* mot);
 bool grilleBonne(char grille[][14], char* fichier, int dimGrille, int* motFaux);
 bool contactAvecMotsExistants(char plateau[][14], int dimGrille, char mot[], char sens, int x, int y, int tours, int* motFaux);
 bool mainVide(joueur joueur, int tours, int nbrJoueur);
+bool verifTemps(joueur* joueurActif, long long tempsDebut, long long tempsFin);
 
 #endif //PROJET_IF2B_2_VERIFICATION_H
 

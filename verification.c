@@ -231,3 +231,13 @@ bool mainVide(joueur joueur, int tours, int nbrJoueur) {
     printf("bravo, vous avez gagne au tours %d, joueur num%d\n", tours + 1, tours%nbrJoueur + 1);
     return true;
 }
+bool verifTemps(joueur* joueurActif, long long tempsDebut, long long tempsFin){
+    long long diffTemps = tempsFin-tempsDebut;
+    if (joueurActif->temps > diffTemps){
+        joueurActif->temps = joueurActif->temps - diffTemps;
+        return true;
+    } else{
+        printf("vous n'avez plus de temps, vous perdez la partie!\n");
+        return false;
+    }
+}

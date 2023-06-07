@@ -8,6 +8,7 @@
 void jeuDeLettres(){
     joueur j1, j2;
     int nbrJoueur, dimGrille, temps, tours = 0;
+    int partieSauvegarder = 0;
     char choixMenu;
     char plateau[14][14];
     srand(time(NULL));
@@ -53,7 +54,7 @@ void jeuDeLettres(){
             free(j1.mainJoueur);
             free(j2.mainJoueur);
         }
-    }while(choixMenu != 'q');
+    }while(choixMenu != 'q' || partieSauvegarder == 0);
 }
 
 

@@ -170,6 +170,7 @@ void JouerTours(char plateau[][14], int dimGrille, joueur j1, joueur j2, int nbr
     char lettresUtilisees[41]; // 41 car c'est le nombre maxi de carte que pourrais posséder une main
     joueur joueurActif;
     int x = 0, y = 0, motFaux = 0, passerTour = 0;
+    long long tempsDebut, tempsFin;
     int jokerMis = 0;
     do {
         if (tours % nbrJoueur + 1 == 1) {
@@ -178,6 +179,7 @@ void JouerTours(char plateau[][14], int dimGrille, joueur j1, joueur j2, int nbr
             joueurActif = j2;
         }
         printf("Tours num%d, le joueur actif est le joueur num%d\n", tours + 1, tours % nbrJoueur + 1);
+        tempsDebut = time(NULL);
         do {
             do {
                 retirerMot(plateau, x, y, sens, mot, motFaux);
@@ -192,6 +194,7 @@ void JouerTours(char plateau[][14], int dimGrille, joueur j1, joueur j2, int nbr
                         do {
                             retirerIndicePlacement(plateau, dimGrille);
                             affichageGrille(dimGrille, plateau);
+                            printf("voici votre temps: %d et ", joueurActif.temps);
                             afficherMain(joueurActif);
                             demanderCoordonnees(&sens, &x, &y, dimGrille, tours);
                         } while (!verifierPositionInitial(plateau, x, y));
@@ -213,14 +216,15 @@ void JouerTours(char plateau[][14], int dimGrille, joueur j1, joueur j2, int nbr
                 verificationJoker(mot, &jokerMis);
                 affichageMot(mot);
                 placerMot(plateau, x, y ,sens, mot, passerTour);
-            } while (passerTour == 0 &&!contactAvecMotsExistants(plateau, dimGrille, mot, sens, x, y, tours, &motFaux) && passerTour == 0);
+            } while (passerTour == 0 && !contactAvecMotsExistants(plateau, dimGrille, mot, sens, x, y, tours, &motFaux));
         } while (passerTour == 0 && !grilleBonne(plateau, "../data/liste_francais.txt", dimGrille, &motFaux) );
         retirerLettresMain(&joueurActif, lettresUtilisees, passerTour);
         tours++;
         motFaux = 0;
         jokerMis = 0;
         passerTour = 0;
-    } while (!mainVide(joueurActif, tours-1, nbrJoueur));
+        tempsFin = time(NULL);
+    } while (!mainVide(joueurActif, tours-1, nbrJoueur) && verifTemps(&joueurActif, tempsDebut, tempsFin));
 }
 
 
