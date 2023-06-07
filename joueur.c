@@ -9,6 +9,24 @@ void initialiserJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) 
     int tailleMain;
 
     if (nbrJoueur == 1) {
+        tailleMain = pow(dimGrille, 1.5);
+    } else if (nbrJoueur == 2) {
+        tailleMain = (pow(dimGrille, 1.67)) / 2;
+    } else {
+        printf("Erreur : nombre de joueurs invalide!\n");
+        return;
+    }
+
+    joueur->mainJoueur = malloc(tailleMain * sizeof(char));
+    joueur->temps = temps;
+    joueur->tailleMain = tailleMain;
+
+    distribuerMain(joueur);
+}
+void ReprendreJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) {
+    int tailleMain;
+
+    if (nbrJoueur == 1) {
         tailleMain = pow(dimGrille, 1);
     } else if (nbrJoueur == 2) {
         tailleMain = (pow(dimGrille, 1)) / 2;
@@ -21,13 +39,13 @@ void initialiserJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) 
     joueur->temps = temps;
     joueur->tailleMain = tailleMain;
 
-    distribuerMain(joueur, joueur->tailleMain);
+    distribuerMain(joueur);
 }
 
 
 
 // distribuerMain, distrube la main du joueur en fonction de la dimension de la grille
-void distribuerMain(joueur* joueur, int tailleMain) {
+void distribuerMain(joueur* joueur) {
     int lettre;
     char totalLettres[10000];
     int frequencesMultiple[26];
@@ -50,12 +68,12 @@ void distribuerMain(joueur* joueur, int tailleMain) {
             j++;
         }
     }
-    for (int i = 0; i <= tailleMain-2; ++i) {
+    for (int i = 0; i <= joueur->tailleMain-2; ++i) {
         lettre = rand()%10000;
         joueur->mainJoueur[i] = totalLettres[lettre];
     }
-    joueur->mainJoueur[tailleMain - 1] = '?';
-    joueur->mainJoueur[tailleMain] = '\0'; // On ajoute le caractère de fin de chaîne
+    joueur->mainJoueur[joueur->tailleMain - 1] = '?';
+    joueur->mainJoueur[joueur->tailleMain] = '\0'; // On ajoute le caractère de fin de chaîne
 
 }
 

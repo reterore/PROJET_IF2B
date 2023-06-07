@@ -233,6 +233,7 @@ bool mainVide(joueur joueur, int tours, int nbrJoueur) {
 }
 bool verifTemps(joueur* joueurActif, long long tempsDebut, long long tempsFin){
     long long diffTemps = tempsFin-tempsDebut;
+    double duree = difftime(tempsFin, tempsDebut);
     if (joueurActif->temps > diffTemps){
         joueurActif->temps = joueurActif->temps - diffTemps;
         return true;
