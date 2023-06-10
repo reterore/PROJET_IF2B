@@ -17,32 +17,13 @@ void initialiserJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) 
         return;
     }
 
-    joueur->mainJoueur = malloc(tailleMain * sizeof(char));
     joueur->temps = temps;
     joueur->tailleMain = tailleMain;
+    joueur->perdu = false;
+    joueur->mainJoueur = malloc((tailleMain) * sizeof(char));
 
     distribuerMain(joueur);
 }
-void ReprendreJoueur(joueur* joueur, int dimGrille, int temps, int nbrJoueur) {
-    int tailleMain;
-
-    if (nbrJoueur == 1) {
-        tailleMain = pow(dimGrille, 1);
-    } else if (nbrJoueur == 2) {
-        tailleMain = (pow(dimGrille, 1)) / 2;
-    } else {
-        printf("Erreur : nombre de joueurs invalide!\n");
-        return;
-    }
-
-    joueur->mainJoueur = malloc(tailleMain * sizeof(char));
-    joueur->temps = temps;
-    joueur->tailleMain = tailleMain;
-
-    distribuerMain(joueur);
-}
-
-
 
 // distribuerMain, distrube la main du joueur en fonction de la dimension de la grille
 void distribuerMain(joueur* joueur) {
@@ -77,16 +58,15 @@ void distribuerMain(joueur* joueur) {
 
 }
 
-void afficherMain(joueur joueur) {
+void afficherMain(joueur* joueur) {
     int i = 0;
-    printf("\n");
     printf("Vos lettres:\n");
     do {
-        if(joueur.mainJoueur[i] != '*') {
-            printf("|%c", joueur.mainJoueur[i]);
+        if(joueur->mainJoueur[i] != '*') {
+            printf("|%c", joueur->mainJoueur[i]);
         }
         i++;
-    } while(i<joueur.tailleMain);
+    } while(i<joueur->tailleMain);
     printf("|\n");
 }
 
@@ -121,12 +101,14 @@ void sauvegarderPartie(joueur* joueur1, joueur* joueur2, int nbrJoueur, int dimG
     fprintf(fichier, "%d\n", nbrJoueur);
     fprintf(fichier, "%d\n", dimGrille);
     fprintf(fichier, "%d\n", tours);
-    fprintf(fichier, "%s\n", joueur1->mainJoueur);
     fprintf(fichier, "%d\n", joueur1->temps);
     fprintf(fichier, "%d\n", joueur1->tailleMain);
-    fprintf(fichier, "%s\n", joueur2->mainJoueur);
-    fprintf(fichier, "%d\n", joueur2->temps);
-    fprintf(fichier, "%d\n", joueur2->tailleMain);
+    fprintf(fichier, "%s\n", joueur1->mainJoueur);
+    if(nbrJoueur == 2) {
+        fprintf(fichier, "%d\n", joueur2->temps);
+        fprintf(fichier, "%d\n", joueur2->tailleMain);
+        fprintf(fichier, "%s\n", joueur2->mainJoueur);
+    }
     // Écrire le plateau de jeu
     for (int i = 0; i < 14; i++) {
         for (int j = 0; j < 14; j++) {
@@ -145,26 +127,35 @@ void chargerPartie(joueur* joueur1, joueur* joueur2, int* nbrJoueur, int* dimGri
         printf("Erreur lors de l'ouverture du fichier de sauvegarde.\n");
         return;
     }
+
+    char main1[50];
+    char main2[50];
+
     // Lire les informations du fichier
-    fscanf(fichier, "%d\n", nbrJoueur);
+    fscanf(fichier, "%d", nbrJoueur);
     printf("%d\n", *nbrJoueur);
-    fscanf(fichier, "%d\n", dimGrille);
+    fscanf(fichier, "%d", dimGrille);
     printf("%d\n", *dimGrille);
-    fscanf(fichier, "%d\n", tours);
+    fscanf(fichier, "%d", tours);
     printf("%d\n", *tours);
-    fscanf(fichier, "%s\n", joueur1->mainJoueur);
-    printf("Main du joueur : %s\n", joueur1->mainJoueur);
+
+
     fscanf(fichier, "%d\n", &joueur1->temps);
     printf("%d\n", joueur1->temps);
     fscanf(fichier, "%d\n", &joueur1->tailleMain);
     printf("%d\n", joueur1->tailleMain);
-    printf("le bug se situe juste ici\n");
-    fscanf(fichier, "%s\n", joueur2->mainJoueur);
-    printf("test");
-    fscanf(fichier, "%d\n", &joueur2->temps);
-    printf("test");
-    fscanf(fichier, "%d\n", &joueur2->tailleMain);
-    printf("test\n");
+    fscanf(fichier, "%s", main1);
+    printf("Main du joueur : %s\n", main1);
+    joueur1->mainJoueur = main1;
+    if(nbrJoueur == 2) {
+        fscanf(fichier, "%d\n", &joueur2->temps);
+        printf("%d\n", joueur2->temps);
+        fscanf(fichier, "%d\n", &joueur2->tailleMain);
+        printf("%d\n", joueur2->tailleMain);
+        fscanf(fichier, "%s\n", main2);
+        printf("Main du joueur : %s\n", main2);
+        joueur2->mainJoueur = main2;
+    }
 
 
 

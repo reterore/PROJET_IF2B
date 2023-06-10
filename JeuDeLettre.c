@@ -8,7 +8,6 @@
 void jeuDeLettres(){
     joueur j1, j2;
     int nbrJoueur, dimGrille, temps, tours = 0;
-    int partieSauvegarder = 0;
     char choixMenu;
     char plateau[14][14];
     srand(time(NULL));
@@ -24,7 +23,7 @@ void jeuDeLettres(){
                 printf("vous avez decidez de reprendre votre partie.\n");
                 chargerPartie(&j1, &j2, &nbrJoueur, &dimGrille, plateau, &tours);
                 printf("%d %d %d %s %s ", dimGrille, tours, nbrJoueur, j1.mainJoueur, j2.mainJoueur);
-                JouerTours(plateau, dimGrille, j1, j2, nbrJoueur, tours);
+                JouerTours(plateau, dimGrille, &j1, &j2, nbrJoueur, tours);
                 break;
             case 'n':
                 nbrJoueur = asquisitionNbrJoueur();
@@ -32,9 +31,11 @@ void jeuDeLettres(){
                 temps = acquisitionTemps();//demande et prends la valeur du temps de la partie
                 initGrille(plateau);// initialise la grille en fonction de la dimension donnée
                 initialiserJoueur(&j1, dimGrille, temps/nbrJoueur, nbrJoueur);
-                initialiserJoueur(&j2, dimGrille, temps/nbrJoueur, nbrJoueur);
+                if(nbrJoueur == 2) {
+                    initialiserJoueur(&j2, dimGrille, temps / nbrJoueur, nbrJoueur);
+                }
                 printf("test");
-                JouerTours(plateau, dimGrille, j1, j2, nbrJoueur, tours);
+                JouerTours(plateau, dimGrille, &j1, &j2, nbrJoueur, tours);
                 break;
             case 'q':
                 printf("/// --- Au revoir! --- ///");
@@ -45,12 +46,11 @@ void jeuDeLettres(){
         }
         if(nbrJoueur == 1){
             free(j1.mainJoueur);
-            free(j2.mainJoueur);
         }else{
             free(j1.mainJoueur);
             free(j2.mainJoueur);
         }
-    }while(choixMenu != 'q' || partieSauvegarder == 0);
+    }while(choixMenu != 'q');
 }
 
 

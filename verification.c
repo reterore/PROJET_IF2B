@@ -4,27 +4,68 @@
 
 #include "verification.h"
 
+bool verifLettresMot(char* lettresUtilisees, joueur* joueur) {
+    char motSansEtoiles[13]; // Tableau pour stocker le mot sans les étoiles
+    int index = 0;
 
+    for (int i = 0; i < strlen(lettresUtilisees); ++i) {
+        if (lettresUtilisees[i] != '*') {
+            motSansEtoiles[index++] = lettresUtilisees[i];
+        }
+    }
 
-bool verifLettresMot(char* mot, joueur joueur) {
-    char copieMain[strlen(joueur.mainJoueur) + 1];
-    strcpy(copieMain, joueur.mainJoueur);
+    motSansEtoiles[index] = '\0'; // Ajouter le caractère de fin de chaîne
 
-    for (int i = 0; i < strlen(mot); ++i) {
-        char* lettre = strchr(copieMain, mot[i]);
+    for (int i = 0; i < strlen(motSansEtoiles); ++i) {
+        char* lettre = strchr(joueur->mainJoueur, motSansEtoiles[i]);
 
         if (lettre == NULL) {
             printf("!!!vous n'avez pas les bonnes lettres pour faire ce mot!!!\n");
             return false; // La lettre du mot n'est pas présente dans la main du joueur
-        } else {
-            *lettre = ' '; // Marquer la lettre comme utilisée en la remplaçant par un espace
         }
     }
 
     return true; // Toutes les lettres du mot sont présentes dans la main du joueur
 }
 
-bool verificationJoker(char* mot, int* jokerMis) {
+
+bool verifierPlacement(const char plateau[][14], int x, int y, char sens, char* mot, char* lettresUtilisees) {
+    int longueurMot = strlen(mot), n;
+    if(sens == 'h'){
+        for (int i = 0; i < longueurMot; ++i) {
+            printf("plateau en %d: %c\n", i , plateau[y][x+i]);
+            if(plateau[y][x+i] != '_' && plateau[y+i][x+i] != '#'){
+                if (plateau[y][x+i] != mot[i]){
+                    printf("une lettre est poser sur une lettre differentes!\n");
+                    return false;
+                }else{
+                    lettresUtilisees[i] = '*';
+                }
+            }
+        }
+    } else{
+        for (int i = 0; i < longueurMot; ++i) {
+            printf("|plateau en %d, %c\n", i , plateau[y+i][x]);
+            if(plateau[y+i][x] != '_' && plateau[y+i][x] != '#'){
+                if (plateau[y+i][x] != mot[i]){
+                    printf("une lettre est poser sur une lettre differentes!\n");
+                    return false;
+                }else{
+                    for (int j = 0; j < strlen(lettresUtilisees); ++j) {
+                        if(lettresUtilisees[j] == mot[i]){
+                            lettresUtilisees[j] = '*';
+                            j = 12;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    printf("\n");
+    return true;
+}
+
+bool verificationJoker(char* mot) {
     int i = 0;
     char joker;
     while (mot[i] != '\0') {
@@ -61,30 +102,6 @@ bool rechercheMotFichier(char* fichier, char* mot) {
     printf("le mot %s n'existe pas!\n", mot);
     return false;
 }
-bool verifierConflit(const char plateau[][14], int x, int y, char sens, const char* mot) {
-    int lenMot = strlen(mot);
-
-    if (sens == 'h') {
-        // Vérification pour un placement horizontal
-        for (int i = 0; i < lenMot; i++) {
-            if ((plateau[y][x + i] != '_' && plateau[y][x + i] != '#' ) && plateau[y][x + i] != mot[i]) {
-                printf("Le mot ne peut pas etre place a cet endroit. Il y a deja une lettres.\n");
-                return false;
-            }
-        }
-    } else if (sens == 'v') {
-        // Vérification pour un placement vertical
-        for (int i = 0; i < lenMot; i++) {
-            if (plateau[y + i][x] != '_' && plateau[y][x + i] != '#' && plateau[y + i][x] != mot[i]) {
-                printf("Le mot ne peut pas etre place a cet endroit. Il y a deja une lettres.\n");
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
 
 bool grilleBonne(char grille[][14], char* fichier, int dimGrille, int *motFaux) {
     // Vérification des mots horizontaux
@@ -143,7 +160,7 @@ bool grilleBonne(char grille[][14], char* fichier, int dimGrille, int *motFaux) 
     return true;
 }
 
-bool contactAvecMotsExistants(char plateau[][14], int dimGrille, char mot[], char sens, int x, int y, int tours, int* motFaux) {
+bool contactAvecMotsExistants(char plateau[][14], char* mot,char sens, int x, int y, int tours, int* motFaux) {
     int longueurMot = strlen(mot);
     if (tours < 1) { // pas de contact requis au premier tour
         return true;
@@ -151,66 +168,60 @@ bool contactAvecMotsExistants(char plateau[][14], int dimGrille, char mot[], cha
 
     if (sens == 'h') {
         if (longueurMot == 1){
+            printf("%c :Caractères en contact : %c %c %c %c\n", mot[0], plateau[y - 1][x], plateau[y + 1][x],
+                   plateau[y][x - 1], plateau[y][x + 1]);
             if (plateau[y - 1][x] != '_' || plateau[y + 1][x] != '_' || plateau[y][x - 1] != '_' || plateau[y][x + 1] != '_') {
-                printf("0Caractères en contact : %c %c %c %c\n", plateau[y - 1][x], plateau[y + 1][x],
-                       plateau[y][x - 1], plateau[y][x + 1]);
                 return true;
             }
         } else {
+            printf("%c :Caractères en contact : %c %c %c\n", plateau[y - 1][x], plateau[y + 1][x], plateau[y][x - 1]);
             if (plateau[y - 1][x] != '_' || plateau[y + 1][x] != '_' || plateau[y][x - 1] != '_') {
-                printf("1Caractères en contact : %c %c %c\n", plateau[y - 1][x], plateau[y + 1][x], plateau[y][x - 1]);
                 return true;
             }
-            if (longueurMot < 2) {
+            if (longueurMot > 2) {
                 for (int i = 1; i < longueurMot - 1; ++i) {
-                    printf("2Caractères en contact : %c %c\n", plateau[y - 1][x + i], plateau[y + 1][x + i]);
+                    printf("%c :Caractères en contact : %c %c\n", plateau[y - 1][x + i], plateau[y + 1][x + i]);
                     if (plateau[y - 1][x + i] != '_' || plateau[y + 1][x + i] != '_') {
-                        printf("2Caractères en contact : %c %c\n", plateau[y - 1][x + i], plateau[y + 1][x + i]);
                         return true;
                     }
                 }
             }
-            printf("3Caractères en contact : %c %c %c\n", plateau[y - 1][x + longueurMot - 1],
+            printf("%c :Caractères en contact : %c %c %c\n", mot[longueurMot-1], plateau[y - 1][x + longueurMot - 1],
                    plateau[y + 1][x + longueurMot - 1], plateau[y + longueurMot][x]);
             if (plateau[y - 1][x + longueurMot - 1] != '_' || plateau[y + 1][x + longueurMot - 1] != '_' ||
                 plateau[y + longueurMot][x + 1] != '_') {
-                printf("3Caractères en contact : %c %c %c\n", plateau[y - 1][x + longueurMot - 1],
-                       plateau[y + 1][x + longueurMot - 1], plateau[y + longueurMot][x]);
                 return true;
             }
         }
     } else if (sens == 'v') {
         if (longueurMot == 1){
+            printf("%c :Caractères en contact : %c %c %c %c\n", mot[0], plateau[y][x - 1], plateau[y][x + 1],
+                   plateau[y - 1][x], plateau[y + 1][x]);
             if (plateau[y][x - 1] != '_' || plateau[y][x + 1] != '_' || plateau[y - 1][x] != '_' || plateau[y + 1][x] != '_') {
-                printf("0Caractères en contact : %c %c %c %c\n", plateau[y][x - 1], plateau[y][x + 1],
-                       plateau[y - 1][x], plateau[y + 1][x]);
                 return true;
             }
         } else {
+            printf("%c :Caractères en contact : %c %c %c\n", plateau[y][x - 1], plateau[y][x + 1], plateau[y - 1][x]);
             if (plateau[y][x - 1] != '_' || plateau[y][x + 1] != '_' || plateau[y - 1][x] != '_') {
-                printf("1Caractères en contact : %c %c %c\n", plateau[y][x - 1], plateau[y][x + 1], plateau[y - 1][x]);
                 return true;
             }
-            if (longueurMot < 2) {
+            if (longueurMot > 2) {
                 for (int i = 1; i < longueurMot - 1; ++i) {
-                    printf("2Caractères en contact : %c %c\n", plateau[y + i][x - 1], plateau[y + i][x + 1]);
+                    printf("%c :Caractères en contact : %c %c\n", plateau[y + i][x - 1], plateau[y + i][x + 1]);
                     if (plateau[y + i][x - 1] != '_' || plateau[y + i][x + 1] != '_') {
-                        printf("2Caractères en contact : %c %c\n", plateau[y + i][x - 1], plateau[y + i][x + 1]);
                         return true;
                     }
                 }
             }
-            printf("3Caractères en contact : %c %c %c\n", plateau[y + longueurMot - 1][x - 1],
+            printf("%c :Caractères en contact : %c %c %c\n", mot[longueurMot-1], plateau[y + longueurMot - 1][x - 1],
                    plateau[y + longueurMot - 1][x + 1], plateau[y + longueurMot][x]);
             if (plateau[y + longueurMot - 1][x - 1] != '_' || plateau[y + longueurMot - 1][x + 1] != '_' ||
                 plateau[y + longueurMot][x] != '_') {
-                printf("3Caractères en contact : %c %c %c\n", plateau[y + longueurMot - 1][x - 1],
-                       plateau[y + longueurMot - 1][x + 1], plateau[y + longueurMot][x]);
                 return true;
             }
         }
     }
-    printf("Vous devez être en contact avec une lettre déjà sur le plateau !\n");
+    printf("Vous devez etre en contact avec une lettre deja sur le plateau !\n");
     *motFaux = 1;
     return false;
 }
@@ -238,7 +249,8 @@ bool verifTemps(joueur* joueurActif, long long tempsDebut, long long tempsFin){
         joueurActif->temps = joueurActif->temps - diffTemps;
         return true;
     } else{
-        printf("vous n'avez plus de temps, vous perdez la partie!\n");
+        printf("vous n'avez plus de temps, vous ne pouvez plus posez de lettres\n");
+        joueurActif->perdu = true;
         return false;
     }
 }
