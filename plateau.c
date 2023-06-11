@@ -174,6 +174,17 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
     int x = 0, y = 0, motFaux = 0, passerTour = 0, numJoueur;
     long long tempsDebut, tempsFin;
     do {
+        if (nbrJoueur == 2){
+            if (j1->perdu && j2->perdu) {
+                printf("les 2 joueurs n'ont plus de temps, fin de la partie!\n");
+                return;
+            }
+        } else {
+            if (j1->perdu) {
+                printf("Vous n'avez plus de temps, fin de la partie!\n");
+                return;
+            }
+        }
         tempsDebut = time(NULL);
         if (tours % nbrJoueur + 1 == 1) {
             joueurActif = j1;
@@ -181,10 +192,6 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
         } else {
             joueurActif = j2;
             numJoueur = 2;
-        }
-        if (j1->perdu && j2->perdu){
-            printf("les 2 joueurs n'ont plus de temps, fin de la partie!\n");
-            return;
         }
         if (j1->perdu){
             joueurActif = j2;
@@ -212,7 +219,6 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
                             affichageGrille(dimGrille, plateau);
                             printf("voici votre temps: %d et ", joueurActif->temps);
                             afficherMain(joueurActif);
-                            printf("%llu", tempsDebut);
                             demanderCoordonnees(&sens, &x, &y, dimGrille, tours);
                         } while (!verifierPositionInitial(plateau, x, y));
                         getchar();
@@ -220,8 +226,8 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
                         acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees, tours);
                         if (strcmp(mot, "/S") == 0) { // Vérifier si le joueur veut sauvegarder la partie
                             retirerIndicePlacement(plateau, dimGrille);
-                            sauvegarderPartie(j1, j2, nbrJoueur, dimGrille, plateau,
-                                              tours); // Appeler une fonction pour sauvegarder la partie
+                            sauvegarderPartie(j1, nbrJoueur, dimGrille, plateau, tours); // Appeler une fonction pour sauvegarder la partie
+                            sauvegarderJoueur2(j2);
                             return; // Sortir de la fonction après avoir sauvegardé la partie
                         } else if (strcmp(mot, "/P") == 0) {
                             passerTour = 1;

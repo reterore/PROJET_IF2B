@@ -90,7 +90,7 @@ void retirerLettresMain(joueur* j, char* lettresUtilisees, int passerTours) {
 }
 
 
-void sauvegarderPartie(joueur* joueur1, joueur* joueur2, int nbrJoueur, int dimGrille, char plateau[][14], int tours) {
+void sauvegarderPartie(joueur* joueur1, int nbrJoueur, int dimGrille, char plateau[][14], int tours) {
     // Ouvrir le fichier en mode d'écriture
     FILE* fichier = fopen("../data/sauvegarde.txt", "w");
     if (fichier == NULL) {
@@ -103,69 +103,96 @@ void sauvegarderPartie(joueur* joueur1, joueur* joueur2, int nbrJoueur, int dimG
     fprintf(fichier, "%d\n", tours);
     fprintf(fichier, "%d\n", joueur1->temps);
     fprintf(fichier, "%d\n", joueur1->tailleMain);
+    int valeurEntiere = joueur1->perdu ? 1 : 0;
+    fprintf(fichier, "%d\n", valeurEntiere);
     fprintf(fichier, "%s\n", joueur1->mainJoueur);
-    if(nbrJoueur == 2) {
-        fprintf(fichier, "%d\n", joueur2->temps);
-        fprintf(fichier, "%d\n", joueur2->tailleMain);
-        fprintf(fichier, "%s\n", joueur2->mainJoueur);
-    }
     // Écrire le plateau de jeu
     for (int i = 0; i < 14; i++) {
         for (int j = 0; j < 14; j++) {
-            fprintf(fichier, "%c\n", plateau[i][j]);
+            fprintf(fichier, "%c", plateau[i][j]);
         }
+        fprintf(fichier, "\n");
     }
     // Fermer le fichier
     fclose(fichier);
-    printf("La partie a ete sauvegardee avec succes dans le fichier sauvegarde.txt.\n");
+    printf("La partie a été sauvegardée avec succès dans le fichier sauvegarde.txt.\n");
+
 }
 
-void chargerPartie(joueur* joueur1, joueur* joueur2, int* nbrJoueur, int* dimGrille, char plateau[][14], int* tours) {
-    // Ouvrir le fichier en mode de lecture
-    FILE* fichier = fopen("../data/sauvegarde.txt", "r");
+void sauvegarderJoueur2(joueur* joueur){
+    FILE* fichier = fopen("../data/sauvegarde2.txt", "w");
     if (fichier == NULL) {
         printf("Erreur lors de l'ouverture du fichier de sauvegarde.\n");
         return;
     }
+    fprintf(fichier, "%d\n", joueur->temps);
+    fprintf(fichier, "%d\n", joueur->tailleMain);
+    int valeurEntiere = joueur->perdu ? 1 : 0;
+    fprintf(fichier, "%d\n", valeurEntiere);
+    fprintf(fichier, "%s\n", joueur->mainJoueur);
+    fclose(fichier);
+}
 
-    char main1[50];
-    char main2[50];
-
-    // Lire les informations du fichier
-    fscanf(fichier, "%d", nbrJoueur);
-    printf("%d\n", *nbrJoueur);
-    fscanf(fichier, "%d", dimGrille);
-    printf("%d\n", *dimGrille);
-    fscanf(fichier, "%d", tours);
-    printf("%d\n", *tours);
-
-
-    fscanf(fichier, "%d\n", &joueur1->temps);
-    printf("%d\n", joueur1->temps);
-    fscanf(fichier, "%d\n", &joueur1->tailleMain);
-    printf("%d\n", joueur1->tailleMain);
-    fscanf(fichier, "%s", main1);
-    printf("Main du joueur : %s\n", main1);
-    joueur1->mainJoueur = main1;
-    if(nbrJoueur == 2) {
-        fscanf(fichier, "%d\n", &joueur2->temps);
-        printf("%d\n", joueur2->temps);
-        fscanf(fichier, "%d\n", &joueur2->tailleMain);
-        printf("%d\n", joueur2->tailleMain);
-        fscanf(fichier, "%s\n", main2);
-        printf("Main du joueur : %s\n", main2);
-        joueur2->mainJoueur = main2;
+joueur creerJoueur1DepuisSauvegarde(int* nbrJoueur, int* dimGrille, char plateau[][14], int* tours) {
+    joueur repriseJoueur;
+    int valeurEntiere;
+    FILE* fichier = fopen("../data/sauvegarde.txt", "r");
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier de sauvegarde.\n");
+        repriseJoueur.perdu = true;
+        return repriseJoueur;
     }
+    fscanf(fichier, "%d\n", nbrJoueur);
+    fscanf(fichier, "%d\n", dimGrille);
+    fscanf(fichier, "%d\n", tours);
 
+    fscanf(fichier, "%d\n", &(repriseJoueur.temps));
+    fscanf(fichier, "%d\n", &(repriseJoueur.tailleMain));
+    fscanf(fichier, "%d", &valeurEntiere);
+    fscanf(fichier, "%d", &valeurEntiere);
+    repriseJoueur.perdu = (valeurEntiere == 1) ? true : false;
+    // Allouer de la mémoire pour la main du joueur
+    repriseJoueur.mainJoueur = (char*)malloc((repriseJoueur.tailleMain) * sizeof(char));
+    if (repriseJoueur.mainJoueur == NULL) {
+        printf("Erreur lors de l'allocation de mémoire pour la main du joueur.\n");
+        repriseJoueur.perdu = true;
+        fclose(fichier);
+        return repriseJoueur;
+    }
+    fscanf(fichier, "%s\n", repriseJoueur.mainJoueur);
 
-
-    // Lire le plateau de jeu
     for (int i = 0; i < 14; i++) {
         for (int j = 0; j < 14; j++) {
-            fscanf(fichier, " %c", &plateau[i][j]);
+            fscanf(fichier, " %c", &(plateau[i][j]));
         }
     }
-    // Fermer le fichier
+
     fclose(fichier);
-    printf("La partie a été chargée avec succès à partir du fichier sauvegarde.txt.\n");
+    repriseJoueur.perdu = false;
+    return repriseJoueur;
+}
+
+joueur creerJoueur2DepuisSauvegarde(){
+    joueur repriseJoueur;
+    int valeurEntiere;
+    FILE* fichier = fopen("../data/sauvegarde2.txt", "r");
+    if (fichier == NULL) {
+        printf("Erreur lors de l'ouverture du fichier de sauvegarde.\n");
+        repriseJoueur.perdu = true;
+        return repriseJoueur;
+    }
+    fscanf(fichier, "%d\n", &(repriseJoueur.temps));
+    fscanf(fichier, "%d\n", &(repriseJoueur.tailleMain));
+    fscanf(fichier, "%d", &valeurEntiere);
+    repriseJoueur.perdu = (valeurEntiere == 1) ? true : false;
+    // Allouer de la mémoire pour la main du joueur
+    repriseJoueur.mainJoueur = (char*)malloc((repriseJoueur.tailleMain) * sizeof(char));
+    if (repriseJoueur.mainJoueur == NULL) {
+        printf("Erreur lors de l'allocation de mémoire pour la main du joueur.\n");
+        repriseJoueur.perdu = true;
+        fclose(fichier);
+        return repriseJoueur;
+    }
+    fscanf(fichier, "%s\n", repriseJoueur.mainJoueur);
+    return repriseJoueur;
 }

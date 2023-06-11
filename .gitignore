@@ -1,3 +1,4 @@
 # Project exclude paths
 /cmake-build-debug/
 /data/sauvegarde.txt
+/data/sauvegarde2.txt

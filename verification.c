@@ -243,10 +243,9 @@ bool mainVide(joueur joueur, int tours, int nbrJoueur) {
     return true;
 }
 bool verifTemps(joueur* joueurActif, long long tempsDebut, long long tempsFin){
-    long long diffTemps = tempsFin-tempsDebut;
     double duree = difftime(tempsFin, tempsDebut);
-    if (joueurActif->temps > diffTemps){
-        joueurActif->temps = joueurActif->temps - diffTemps;
+    if (joueurActif->temps > duree){
+        joueurActif->temps = joueurActif->temps - duree;
         return true;
     } else{
         printf("vous n'avez plus de temps, vous ne pouvez plus posez de lettres\n");
