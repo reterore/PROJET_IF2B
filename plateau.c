@@ -4,30 +4,36 @@
 
 #include "plateau.h"
 
-int asquisitionNbrJoueur(){
-    int nbrJoueur;
-    printf("Combien de joueur? \n");
-    scanf("%d", &nbrJoueur);
-    while (nbrJoueur < 0 || nbrJoueur > 2){
-        printf("Vous ne pouvez jouer qu'a 2 joueurs maximum, recommencez\n");
-        scanf("%d", &nbrJoueur);
+int acquisitionNbrJoueur() { // accepte uniquement 1 ou 2 comme entrée
+    char nbrJoueur;
+    printf("Combien de joueurs ?\n");
+    scanf(" %c", &nbrJoueur);
+    while (nbrJoueur < '1' || nbrJoueur > '2') {
+        printf("Vous ne pouvez jouer qu'a 1 ou 2 joueurs, veuillez recommencer.\n");
+        scanf(" %c", &nbrJoueur);
     }
-    return nbrJoueur;
+    return nbrJoueur - '0';  // Convertir le caractère en entier en soustrayant '0'
 }
 
-int acquisitionDimGrille(){
+int acquisitionDimGrille() { // prends la dimension de la grille entre 6 et 12 uniquement
     int dimGrille;
-    printf("quelle est la dimension de votre grille?\n");
+    printf("Quelle est la dimension de votre grille?\n");
     scanf("%d", &dimGrille);
-    while (dimGrille < 6 || dimGrille > 12){
-        printf("la taille de la grille doit etre comprise entre 6 et 12, recommencez\n");
+
+    // Vérifier que l'entrée est un nombre et qu'il est entre 6 et 12
+    while (dimGrille < 6 || dimGrille > 12) {
+        printf("La taille de la grille doit être comprise entre 6 et 12, veuillez recommencer.\n");
+
+        // Vider le tampon d'entrée
+        while (getchar() != '\n');
+
         scanf("%d", &dimGrille);
     }
+
     return dimGrille;
 }
 
-
-void initGrille(char (*plateau)[14]){
+void initGrille(char (*plateau)[14]){ // initialise la grille avec des '_'
     for (int i = 0; i < 14; ++i) {
         for (int j = 0; j < 14; ++j) {
             plateau[i][j]='_';
@@ -35,12 +41,7 @@ void initGrille(char (*plateau)[14]){
     }
 }
 
-void affichageGrille(int dimGrille, char (*plateau)[14]){
-    printf("  ");
-    for (int i = 0; i < dimGrille/8; ++i) {
-        printf("      ");
-    }
-    printf("**--Plateau de jeu--**\n");
+void affichageGrille(int dimGrille, char (*plateau)[14]){ // permet d'afficher la grille pendant la partie
     printf("     ");
     for (int i = 1; i < dimGrille + 1; ++i) {
         if (i >= 11) {
@@ -66,19 +67,26 @@ void affichageGrille(int dimGrille, char (*plateau)[14]){
 
 
 
-int acquisitionTemps() {
+int acquisitionTemps() { // prends la valeur du temps de la partie entre 60 et 240
     int temps;
-    printf("Combien de temps dure la partie?\n");
+    printf("Combien de temps dure la partie ?\n");
     scanf("%d", &temps);
+
+    // Vérifier que l'entrée est un nombre et qu'il est entre 60 et 240
     while (temps < 60 || temps > 240) {
-        printf("Le temps de la partie doit etre compris entre 60 et 240 secondes, recommencez\n");
+        printf("Le temps de la partie doit etre compris entre 60 et 240 secondes, veuillez recommencer.\n");
+
+        // Vider le tampon d'entrée
+        while (getchar() != '\n');
+
         scanf("%d", &temps);
     }
+
     return temps;
 }
 
 
-int annoncePartie(int nbrJoueur, int dimGrille, int temps){
+int annoncePartie(int nbrJoueur, int dimGrille, int temps){ // fonction qui récapitule les paramètres de la partie
     if( nbrJoueur==1){
         printf("/// votre partie va se jouer seul sur une grille de %dX%d, vous avez %d secondes pour finir, bonne chance! ///\n", dimGrille, dimGrille, temps);
     }else{
@@ -86,7 +94,7 @@ int annoncePartie(int nbrJoueur, int dimGrille, int temps){
     }
     return 0;
 }
-void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille, int tours) {
+void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille, int tours) { // demande les coordonnées et le sens du mot à poser
     int decalage = 0;
     if (tours < 1) {
         decalage = 1;
@@ -101,36 +109,60 @@ void demanderCoordonnees(char* sens, int* x, int* y, int dimGrille, int tours) {
     if (*sens == 'v') {
         printf("Vous allez placer votre mot verticalement. Quelles sont les coordonnees de la 1ere lettre?\n");
         printf("Attention, (1,1) correspond au coin en haut a gauche du plateau!\n");
-        printf("Coordonnee en y (lignes) : y = ");
-        scanf("%d", y);
-        printf("Coordonnee en x (colonnes) : x = ");
-        scanf("%d", x);
 
-        while (*y < 1 || *y > dimGrille - decalage || *x < 1 || *x > dimGrille) {
-            printf("/// Mauvaise saisie ! ///\n");
-            printf("Coordonnee en y comprise entre 1 et %d : y = ", dimGrille - decalage);
-            scanf("%d", y);
-            printf("Coordonnee en x comprise entre 1 et %d : x = ", dimGrille);
-            scanf("%d", x);
+        while (1) {
+            printf("Coordonnee en y (lignes) : y = ");
+            if (scanf("%d", y) == 1) {
+                if (*y >= 1 && *y <= dimGrille - decalage) {
+                    break;
+                }
+            } else {
+                scanf("%*s");  // Ignorer l'entrée invalide
+            }
+            printf("/// Mauvaise saisie ! La coordonnees maximal est %d///\n", dimGrille-decalage);
+        }
+
+        while (1) {
+            printf("Coordonnee en x (colonnes) : x = ");
+            if (scanf("%d", x) == 1) {
+                if (*x >= 1 && *x <= dimGrille) {
+                    break;
+                }
+            } else {
+                scanf("%*s");  // Ignorer l'entrée invalide
+            }
+            printf("/// Mauvaise saisie ! La coordonnees maximal est %d///\n", dimGrille);
         }
     } else {
         printf("Vous allez placer votre mot horizontalement. Quelles sont les coordonnees de la 1ere lettre?\n");
-        printf("Coordonnee en y (lignes) : y = ");
-        scanf("%d", y);
-        printf("Coordonnee en x (colonnes) : x = ");
-        scanf("%d", x);
 
-        while (*y < 1 || *y > dimGrille || *x < 1 || *x > dimGrille - decalage) {
-            printf("/// Mauvaise saisie ! ///\n");
-            printf("Coordonnee en y comprise entre 1 et %d : y = ", dimGrille);
-            scanf("%d", y);
-            printf("Coordonnee en x comprise entre 1 et %d : x = ", dimGrille - decalage);
-            scanf("%d", x);
+        while (1) {
+            printf("Coordonnee en y (lignes) : y = ");
+            if (scanf("%d", y) == 1) {
+                if (*y >= 1 && *y <= dimGrille) {
+                    break;
+                }
+            } else {
+                scanf("%*s");  // Ignorer l'entrée invalide
+            }
+            printf("/// Mauvaise saisie ! La coordonnees maximal est %d///\n", dimGrille);
+        }
+
+        while (1) {
+            printf("Coordonnee en x (colonnes) : x = ");
+            if (scanf("%d", x) == 1) {
+                if (*x >= 1 && *x <= dimGrille - decalage) {
+                    break;
+                }
+            } else {
+                scanf("%*s");  // Ignorer l'entrée invalide
+            }
+            printf("/// Mauvaise saisie ! La coordonnees maximal est %d///\n", dimGrille-decalage);
         }
     }
 }
 
-void placerMot(char (*plateau)[14], int x, int y, char sens, const char* mot, int passerTour) {
+void placerMot(char (*plateau)[14], int x, int y, char sens, const char* mot, int passerTour) { // place le mot sur la grille
     int lenMot = strlen(mot);
     if(passerTour != 1) {
         if (sens == 'h') {
@@ -147,7 +179,7 @@ void placerMot(char (*plateau)[14], int x, int y, char sens, const char* mot, in
     }
 }
 
-void retirerMot(char plateau[][14], int x, int y, char sens, char* mot, int motFaux, char* lettreUtilisees) {
+void retirerMot(char plateau[][14], int x, int y, char sens, char* mot, int motFaux, char* lettreUtilisees) { // retire le mot de la grille si besoin
     // Vérifier si le mot doit être retiré
     if (motFaux == 1) {
         int tailleMot = strlen(mot);
@@ -166,9 +198,9 @@ void retirerMot(char plateau[][14], int x, int y, char sens, char* mot, int motF
 }
 
 
-void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int nbrJoueur, int tours) {
+void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int nbrJoueur, int tours) { // fonction principale du programme
     char mot[dimGrille + 1];
-    char sens = 'h'; //initialisation au hasard pour éviter les bugs
+    char sens;
     char lettresUtilisees[12]; // 12 car c'est le nombre maxi de lettres qui pourraient être jouer
     joueur* joueurActif;
     int x = 0, y = 0, motFaux = 0, passerTour = 0, numJoueur;
@@ -220,6 +252,8 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
                             printf("voici votre temps: %d et ", joueurActif->temps);
                             afficherMain(joueurActif);
                             demanderCoordonnees(&sens, &x, &y, dimGrille, tours);
+                            tempsFin = time(NULL);
+                            verifTemps(joueurActif, tempsDebut, tempsFin);
                         } while (!verifierPositionInitial(plateau, x, y));
                         getchar();
                         plateau[y][x] = '#';
@@ -248,7 +282,7 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
         passerTour = 0;
         tempsFin = time(NULL);
         verifTemps(joueurActif, tempsDebut, tempsFin);
-    } while (!mainVide(*joueurActif, tours-1, nbrJoueur));
+    } while (!mainVide(*joueurActif, tours-1, numJoueur));
 }
 
 

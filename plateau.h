@@ -22,7 +22,7 @@
 
 void initGrille(char plateau[][14]);
 void affichageGrille(int dimGrille, char plateau[][dimGrille]);
-int asquisitionNbrJoueur();
+int acquisitionNbrJoueur();
 int acquisitionDimGrille();
 int acquisitionTemps();
 void placerMot(char plateau[][14], int x, int y, char sens, const char* mot, int passerTour);
