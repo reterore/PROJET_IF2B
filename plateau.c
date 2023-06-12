@@ -206,7 +206,7 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
     int x = 0, y = 0, motFaux = 0, passerTour = 0, numJoueur;
     long long tempsDebut, tempsFin;
     do {
-        if (nbrJoueur == 2){
+        if (nbrJoueur == 2){ // regarder si les joueurs ont perdu
             if (j1->perdu && j2->perdu) {
                 printf("les 2 joueurs n'ont plus de temps, fin de la partie!\n");
                 return;
@@ -217,7 +217,7 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
                 return;
             }
         }
-        tempsDebut = time(NULL);
+        tempsDebut = time(NULL); // determiner le joueur en fonctions du tour et du nombre de joueurs
         if (tours % nbrJoueur + 1 == 1) {
             joueurActif = j1;
             numJoueur = 1;
@@ -225,23 +225,23 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
             joueurActif = j2;
             numJoueur = 2;
         }
-        if (j1->perdu){
+        if (j1->perdu){ // regarder si le joueur 1 à perdu (auquelle cas il cède son tour)
             joueurActif = j2;
             numJoueur = 2;
         }
-        if (j2->perdu){
+        if (j2->perdu){ // regarder si le joueur 2 à perdu (auquelle cas il cède son tour)
             joueurActif = j1;
             numJoueur = 1;
         }
-        printf("Tours num%d, le joueur actif est le joueur num%d\n", tours + 1, numJoueur);
+        printf("Tours num%d, le joueur actif est le joueur num%d\n", tours + 1, numJoueur); // annoncer le tour et le joueur qui va jouer
 
         do {
             do {
-                retirerMot(plateau, x, y, sens, mot, motFaux, lettresUtilisees);
-                for (int i = 0; i < dimGrille; ++i) {
+                retirerMot(plateau, x, y, sens, mot, motFaux, lettresUtilisees); // retire un mot du plateau dans le cas où il a été posé et est faux.
+                for (int i = 0; i < dimGrille; ++i) { // réinitialise la chaine mot
                     mot[i] = '\0';
                 }
-                for (int i = 0; i < 12; ++i) {
+                for (int i = 0; i < 12; ++i) { // réinitialise la chaine lettreUtilisees
                     lettresUtilisees[i] = '\0';
                 }
                 do {
@@ -251,25 +251,29 @@ void JouerTours(char plateau[][14], int dimGrille, joueur* j1, joueur* j2, int n
                             affichageGrille(dimGrille, plateau);
                             printf("voici votre temps: %d et ", joueurActif->temps);
                             afficherMain(joueurActif);
-                            demanderCoordonnees(&sens, &x, &y, dimGrille, tours);
+                            demanderCoordonnees(&sens, &x, &y, dimGrille, tours); // demande le sens du mot et les coordonnées de la première lettre
                             tempsFin = time(NULL);
                             verifTemps(joueurActif, tempsDebut, tempsFin);
-                        } while (!verifierPositionInitial(plateau, x, y));
+                            tempsDebut = time(NULL);
+                        } while (!verifierPositionInitial(plateau, x, y)); // vérifier que la première lettre n'est pas posée sur une lettre déjà posée
                         getchar();
-                        plateau[y][x] = '#';
+                        plateau[y][x] = '#'; // mettre un indice de placement pour que le joueur repère où il joue son mot
                         acquisitionMot(mot, dimGrille, joueurActif, plateau, sens, x, y, lettresUtilisees, tours);
                         if (strcmp(mot, "/S") == 0) { // Vérifier si le joueur veut sauvegarder la partie
                             retirerIndicePlacement(plateau, dimGrille);
                             sauvegarderPartie(j1, nbrJoueur, dimGrille, plateau, tours); // Appeler une fonction pour sauvegarder la partie
                             sauvegarderJoueur2(j2);
                             return; // Sortir de la fonction après avoir sauvegardé la partie
-                        } else if (strcmp(mot, "/P") == 0) {
+                        } else if (strcmp(mot, "/P") == 0) { // vérifier si le joueur passe son tour
                             passerTour = 1;
-                        } else if (strcmp(mot, "/Q") == 0) {
+                        } else if (strcmp(mot, "/Q") == 0) { // vérifier si le joueur décide de quitter la partie en cours
                             printf("Vous avez terminez la partie.\n");
                             return;
                         }
-                        verificationJoker(mot);
+                        verificationJoker(mot); // vérifie si le joker a été utilisé.
+                        tempsFin = time(NULL);
+                        verifTemps(joueurActif, tempsDebut, tempsFin);
+                        tempsDebut = time(NULL);
                     } while (passerTour == 0 && !verifierPlacement(plateau, x, y, sens, mot, lettresUtilisees));
                 } while (!verifLettresMot(lettresUtilisees, joueurActif));
                 affichageMot(mot);
